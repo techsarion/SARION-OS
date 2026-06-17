@@ -1,0 +1,365 @@
+// Sarion OS — PostgreSQL schema (Prisma). Multi-module, enterprise scale.
+// Conventions: cuid ids, snake_case table mapping, soft-delete via deleted_at,
+// audit via created_at/updated_at + AuditLog. Heavy read paths backed by
+// Elasticsearch projections + Redis cache (not modeled here).
+
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+// ─────────────────────────── Identity & RBAC ───────────────────────────
+enum Role { SUPER_ADMIN MANAGING_DIRECTOR DEPARTMENT_HEAD TEAM_LEAD EMPLOYEE GUEST }
+enum ScopeLevel { GLOBAL DEPARTMENT TEAM SELF }
+enum EmploymentStatus { ACTIVE ON_LEAVE RESIGNED TERMINATED }
+
+model User {
+  id              String           @id @default(cuid())
+  employeeCode    String           @unique
+  email           String           @unique
+  phone           String?
+  passwordHash    String
+  fullName        String
+  designation     String?
+  role            Role             @default(EMPLOYEE)
+  status          EmploymentStatus @default(ACTIVE)
+  departmentId    String?
+  managerId       String?
+  joinDate        DateTime?
+  avatarUrl       String?
+  mfaEnabled      Boolean          @default(false)
+  mfaSecret       String?
+  lastLoginAt     DateTime?
+  skills          String[]
+  department      Department?      @relation("DeptMembers", fields: [departmentId], references: [id])
+  manager         User?            @relation("OrgHierarchy", fields: [managerId], references: [id])
+  reports         User[]           @relation("OrgHierarchy")
+  teamMemberships TeamMember[]
+  ownedTasks      Task[]           @relation("TaskOwner")
+  assignedTasks   Task[]           @relation("TaskAssignee")
+  grants          PermissionGrant[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
+  @@index([departmentId]) @@index([managerId]) @@index([role,status])
+}
+
+model PermissionGrant {
+  id         String     @id @default(cuid())
+  userId     String
+  permission String     // "task:assign"
+  scope      ScopeLevel @default(SELF)
+  scopeId    String?    // dept/team id when scoped
+  expiresAt  DateTime?
+  user       User       @relation(fields: [userId], references: [id])
+  createdAt  DateTime   @default(now())
+  @@index([userId])
+}
+
+model Delegation {
+  id          String   @id @default(cuid())
+  fromUserId  String
+  toUserId    String
+  reason      String?
+  startsAt    DateTime
+  endsAt      DateTime
+  createdAt   DateTime @default(now())
+}
+
+// ─────────────────────────── Org structure ───────────────────────────
+model Department {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  headId    String?
+  members   User[]     @relation("DeptMembers")
+  teams     Team[]
+  projects  Project[]
+  goals     Goal[]
+  meetings  Meeting[]
+  createdAt DateTime   @default(now())
+  deletedAt DateTime?
+}
+
+model Team {
+  id           String       @id @default(cuid())
+  name         String
+  departmentId String
+  leadId       String?
+  department   Department   @relation(fields: [departmentId], references: [id])
+  members      TeamMember[]
+  createdAt    DateTime     @default(now())
+  @@unique([departmentId, name])
+}
+
+model TeamMember {
+  id     String @id @default(cuid())
+  teamId String
+  userId String
+  team   Team   @relation(fields: [teamId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  @@unique([teamId, userId])
+}
+
+// ─────────────────────────── Projects ───────────────────────────
+enum ProjectMethodology { KANBAN SCRUM WATERFALL }
+enum ProjectStatus { PLANNING ACTIVE ON_HOLD COMPLETED CANCELLED }
+
+model Project {
+  id           String             @id @default(cuid())
+  name         String
+  description  String?
+  departmentId String
+  methodology  ProjectMethodology @default(KANBAN)
+  status       ProjectStatus      @default(PLANNING)
+  budget       Decimal?           @db.Decimal(14,2)
+  ownerId      String
+  startDate    DateTime?
+  endDate      DateTime?
+  department   Department         @relation(fields: [departmentId], references: [id])
+  tasks        Task[]
+  sprints      Sprint[]
+  createdAt    DateTime           @default(now())
+  deletedAt    DateTime?
+  @@index([departmentId,status])
+}
+
+model Sprint {
+  id        String   @id @default(cuid())
+  projectId String
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  goal      String?
+  project   Project  @relation(fields: [projectId], references: [id])
+}
+
+// ─────────────────────────── Tasks ───────────────────────────
+enum TaskStatus { DRAFT ASSIGNED IN_PROGRESS REVIEW APPROVED COMPLETED }
+enum Priority { P0 P1 P2 P3 }
+enum ApprovalStatus { NONE PENDING APPROVED REJECTED }
+
+model Task {
+  id             String         @id @default(cuid())
+  title          String
+  description    String?
+  departmentId   String?
+  projectId      String?
+  sprintId       String?
+  parentTaskId   String?
+  ownerId        String
+  assigneeId     String?
+  priority       Priority       @default(P2)
+  status         TaskStatus     @default(DRAFT)
+  approvalStatus ApprovalStatus @default(NONE)
+  startDate      DateTime?
+  dueDate        DateTime?
+  estimatedHours Float?
+  actualHours    Float?
+  tags           String[]
+  isRecurring    Boolean        @default(false)
+  recurrenceRule String?        // RRULE
+  project        Project?       @relation(fields: [projectId], references: [id])
+  owner          User           @relation("TaskOwner", fields: [ownerId], references: [id])
+  assignee       User?          @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  parent         Task?          @relation("Subtasks", fields: [parentTaskId], references: [id])
+  subtasks       Task[]         @relation("Subtasks")
+  watchers       TaskWatcher[]
+  checklist      ChecklistItem[]
+  dependencies   TaskDependency[] @relation("DependentTask")
+  dependents     TaskDependency[] @relation("BlockingTask")
+  attachments    Attachment[]
+  comments       Comment[]
+  activities     Activity[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  deletedAt      DateTime?
+  @@index([assigneeId,status]) @@index([projectId,status]) @@index([dueDate]) @@index([departmentId])
+}
+
+model TaskWatcher { id String @id @default(cuid()) taskId String userId String task Task @relation(fields:[taskId],references:[id]) @@unique([taskId,userId]) }
+model ChecklistItem { id String @id @default(cuid()) taskId String label String done Boolean @default(false) position Int task Task @relation(fields:[taskId],references:[id]) }
+model TaskDependency {
+  id          String @id @default(cuid())
+  taskId      String // dependent
+  dependsOnId String // blocking
+  type        String @default("FINISH_TO_START")
+  task        Task   @relation("DependentTask", fields:[taskId], references:[id])
+  dependsOn   Task   @relation("BlockingTask", fields:[dependsOnId], references:[id])
+  @@unique([taskId,dependsOnId])
+}
+model TaskTemplate { id String @id @default(cuid()) name String payload Json createdAt DateTime @default(now()) }
+
+// ─────────────────────────── Meetings ───────────────────────────
+enum MeetingType { COMPANY DEPARTMENT STRATEGIC TEAM EMERGENCY }
+enum MeetingStatus { CREATED INVITED CONDUCTED MINUTED CLOSED }
+
+model Meeting {
+  id           String         @id @default(cuid())
+  title        String
+  type         MeetingType
+  status       MeetingStatus  @default(CREATED)
+  organizerId  String
+  departmentId String?
+  scheduledAt  DateTime
+  durationMin  Int            @default(30)
+  location     String?
+  recordingUrl String?
+  agenda       Json?          // ordered agenda items
+  department   Department?    @relation(fields:[departmentId], references:[id])
+  participants MeetingParticipant[]
+  minutes      MeetingMinutes?
+  decisions    Decision[]
+  actionItems  ActionItem[]
+  attachments  Attachment[]
+  createdAt    DateTime       @default(now())
+  @@index([scheduledAt]) @@index([organizerId])
+}
+model MeetingParticipant {
+  id        String  @id @default(cuid())
+  meetingId String
+  userId    String
+  required  Boolean @default(true)
+  attended  Boolean?
+  meeting   Meeting @relation(fields:[meetingId], references:[id])
+  @@unique([meetingId,userId])
+}
+model MeetingMinutes { id String @id @default(cuid()) meetingId String @unique content String authorId String aiGenerated Boolean @default(false) meeting Meeting @relation(fields:[meetingId],references:[id]) createdAt DateTime @default(now()) }
+model Decision { id String @id @default(cuid()) meetingId String summary String ownerId String? meeting Meeting @relation(fields:[meetingId],references:[id]) }
+model ActionItem {
+  id         String   @id @default(cuid())
+  meetingId  String
+  title      String
+  assigneeId String?
+  dueDate    DateTime?
+  taskId     String?  @unique // converted task
+  meeting    Meeting  @relation(fields:[meetingId], references:[id])
+}
+
+// ─────────────────────────── Approvals ───────────────────────────
+enum RequestStatus { PENDING APPROVED REJECTED CANCELLED }
+model ApprovalWorkflow { id String @id @default(cuid()) name String resourceType String steps Json active Boolean @default(true) }
+model ApprovalRequest {
+  id           String        @id @default(cuid())
+  workflowId   String
+  requesterId  String
+  resourceType String
+  resourceId   String?
+  payload      Json
+  status       RequestStatus @default(PENDING)
+  currentStep  Int           @default(0)
+  steps        ApprovalStep[]
+  createdAt    DateTime      @default(now())
+  @@index([requesterId,status])
+}
+model ApprovalStep {
+  id         String        @id @default(cuid())
+  requestId  String
+  stepIndex  Int
+  approverId String
+  status     RequestStatus @default(PENDING)
+  comment    String?
+  decidedAt  DateTime?
+  request    ApprovalRequest @relation(fields:[requestId], references:[id])
+}
+
+// ─────────────────────────── Goals / OKR ───────────────────────────
+enum GoalLevel { COMPANY DEPARTMENT TEAM EMPLOYEE }
+model Goal {
+  id           String    @id @default(cuid())
+  title        String
+  level        GoalLevel
+  ownerId      String?
+  departmentId String?
+  progress     Float     @default(0)
+  confidence   Float     @default(0.5)
+  startDate    DateTime?
+  endDate      DateTime?
+  parentGoalId String?
+  department   Department? @relation(fields:[departmentId], references:[id])
+  keyResults   KeyResult[]
+}
+model KeyResult { id String @id @default(cuid()) goalId String title String target Float current Float @default(0) unit String? kpi String? goal Goal @relation(fields:[goalId],references:[id]) }
+
+// ─────────────────────────── Performance ───────────────────────────
+model PerformanceMetric {
+  id            String   @id @default(cuid())
+  userId        String?
+  departmentId  String?
+  periodStart   DateTime
+  periodEnd     DateTime
+  completionRate Float?
+  timeliness     Float?
+  qualityScore   Float?
+  collaboration  Float?
+  productivity   Float?
+  budgetAdherence Float?
+  @@index([userId]) @@index([departmentId])
+}
+
+// ─────────────────────────── Documents / KB ───────────────────────────
+enum DocCategory { SOP POLICY MANUAL MEETING PROJECT GENERAL }
+model Document {
+  id        String       @id @default(cuid())
+  title     String
+  category  DocCategory  @default(GENERAL)
+  departmentId String?
+  ownerId   String
+  versions  DocumentVersion[]
+  createdAt DateTime     @default(now())
+  deletedAt DateTime?
+}
+model DocumentVersion { id String @id @default(cuid()) documentId String version Int fileUrl String checksum String authorId String notes String? createdAt DateTime @default(now()) document Document @relation(fields:[documentId],references:[id]) @@unique([documentId,version]) }
+
+// ─────────────────────────── Shared: comments/attachments/activity ───────────────────────────
+model Attachment { id String @id @default(cuid()) fileUrl String fileName String mimeType String sizeBytes Int taskId String? meetingId String? uploadedById String createdAt DateTime @default(now()) task Task? @relation(fields:[taskId],references:[id]) meeting Meeting? @relation(fields:[meetingId],references:[id]) }
+model Comment { id String @id @default(cuid()) body String authorId String taskId String? mentions String[] createdAt DateTime @default(now()) task Task? @relation(fields:[taskId],references:[id]) @@index([taskId]) }
+model Activity { id String @id @default(cuid()) taskId String? actorId String verb String meta Json? createdAt DateTime @default(now()) task Task? @relation(fields:[taskId],references:[id]) @@index([taskId]) }
+
+// ─────────────────────────── Communication ───────────────────────────
+model Channel { id String @id @default(cuid()) name String type String createdAt DateTime @default(now()) messages Message[] }
+model Message { id String @id @default(cuid()) channelId String senderId String body String mentions String[] createdAt DateTime @default(now()) channel Channel @relation(fields:[channelId],references:[id]) @@index([channelId,createdAt]) }
+
+// ─────────────────────────── Notifications ───────────────────────────
+enum NotifChannel { IN_APP EMAIL WHATSAPP PUSH }
+model Notification {
+  id        String       @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String?
+  channels  NotifChannel[]
+  resourceType String?
+  resourceId   String?
+  readAt    DateTime?
+  createdAt DateTime     @default(now())
+  @@index([userId,readAt])
+}
+model NotificationPreference { id String @id @default(cuid()) userId String @unique inApp Boolean @default(true) email Boolean @default(true) whatsapp Boolean @default(false) push Boolean @default(true) digest String @default("INSTANT") }
+
+// ─────────────────────────── Automation ───────────────────────────
+model Automation {
+  id        String   @id @default(cuid())
+  name      String
+  trigger   String   // EMPLOYEE_JOINED | PROJECT_CREATED | MEETING_COMPLETED | TASK_OVERDUE
+  condition Json?
+  actions   Json     // ordered action list
+  enabled   Boolean  @default(true)
+  createdById String
+  createdAt DateTime @default(now())
+}
+model AutomationRun { id String @id @default(cuid()) automationId String status String context Json? error String? createdAt DateTime @default(now()) }
+
+// ─────────────────────────── Security / Audit ───────────────────────────
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  resourceType String
+  resourceId   String?
+  ip         String?
+  userAgent  String?
+  before     Json?
+  after      Json?
+  createdAt  DateTime @default(now())
+  @@index([resourceType,resourceId]) @@index([actorId]) @@index([createdAt])
+}
+model Session { id String @id @default(cuid()) userId String refreshTokenHash String ip String? userAgent String? expiresAt DateTime revokedAt DateTime? createdAt DateTime @default(now()) @@index([userId]) }
+model IpAllowlist { id String @id @default(cuid()) cidr String label String? enabled Boolean @default(true) }

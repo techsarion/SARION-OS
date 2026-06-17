@@ -1,0 +1,36 @@
+project_id = "sarion-os"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+# Postgres version for the LOCAL dev DB only (supabase start). Kept at 15 to
+# match the pinned CLI (v1.226). `db push` applies SQL to the linked remote
+# regardless of this value. Bump to 16 only if you upgrade the CLI to v2.x.
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/auth/callback"]
+jwt_expiry = 3600
+enable_signup = false
+
+[auth.email]
+enable_confirmations = false
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[realtime]
+enabled = true
