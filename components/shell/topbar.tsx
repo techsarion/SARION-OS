@@ -12,6 +12,7 @@ import type { NotificationItem } from '@/lib/server/data/workspace';
 export function Topbar({
   userName = 'Sarion Owner',
   userRole = 'Owner',
+  avatarUrl,
   accountHref,
   notifications = [],
   quickPerms,
@@ -19,6 +20,7 @@ export function Topbar({
 }: {
   userName?: string;
   userRole?: string;
+  avatarUrl?: string | null;
   accountHref?: string;
   notifications?: NotificationItem[];
   quickPerms?: QuickPerms;
@@ -40,7 +42,7 @@ export function Topbar({
           title="Your account & password"
           className="flex items-center gap-2 rounded-sm py-1 pl-1 pr-1.5 transition-colors duration-fast hover:bg-white/[0.05]"
         >
-          <Avatar name={userName} size={26} />
+          <Avatar name={userName} src={avatarUrl} size={26} />
           <div className="hidden text-left leading-tight lg:block">
             <div className="text-caption font-medium text-text">{userName}</div>
             <div className="text-[11px] text-text-muted">{userRole}</div>

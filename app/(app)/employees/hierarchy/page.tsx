@@ -45,7 +45,7 @@ function Node({ node, depth }: { node: HierarchyNode; depth: number }) {
         style={{ marginLeft: depth * 22 }}
       >
         {depth > 0 && <span className="text-text-muted">↳</span>}
-        <Avatar name={node.full_name} size={28} />
+        <Avatar name={node.full_name} src={node.avatar_url} size={28} />
         <div className="min-w-0 flex-1">
           <p className="truncate text-body-sm font-medium text-text">{node.full_name}</p>
           <p className="truncate text-caption text-text-muted">{node.designation ?? roleLabel(node.role as Role)}</p>

@@ -22,6 +22,7 @@ export interface TaskListItem {
   ownerId: string;
   assigneeId: string | null;
   assigneeName: string | null;
+  assigneeAvatar: string | null;
   assigneeTeamId: string | null;
   tags: string[];
   isOverdue: boolean;
@@ -30,11 +31,11 @@ export interface TaskListItem {
   watcherCount: number;
 }
 
-interface ProfileLite { id: string; full_name: string; team_id: string | null; department_id: string | null }
+interface ProfileLite { id: string; full_name: string; team_id: string | null; department_id: string | null; avatar_url: string | null }
 
 async function profileMap(): Promise<Map<string, ProfileLite>> {
   const supabase = await createClient();
-  const { data } = await supabase.from('profiles').select('id, full_name, team_id, department_id');
+  const { data } = await supabase.from('profiles').select('id, full_name, team_id, department_id, avatar_url');
   const rows = (data ?? []) as ProfileLite[];
   return new Map(rows.map((p) => [p.id, p]));
 }
@@ -79,7 +80,7 @@ export async function getTasks(): Promise<TaskListItem[]> {
       due_date: t.due_date, start_date: t.start_date,
       departmentId: t.department_id, departmentName: t.department_id ? deptNames.get(t.department_id) ?? null : null,
       projectId: t.project_id, parentTaskId: t.parent_task_id, ownerId: t.owner_id,
-      assigneeId: t.assignee_id, assigneeName: a?.full_name ?? null, assigneeTeamId: a?.team_id ?? null,
+      assigneeId: t.assignee_id, assigneeName: a?.full_name ?? null, assigneeAvatar: a?.avatar_url ?? null, assigneeTeamId: a?.team_id ?? null,
       tags: t.tags ?? [],
       isOverdue: isOverdue(t.due_date, t.status),
       commentCount: commentCounts.get(t.id) ?? 0,
@@ -90,10 +91,10 @@ export async function getTasks(): Promise<TaskListItem[]> {
 }
 
 // ── Detail ───────────────────────────────────────────────────────────────────
-export interface TaskComment { id: string; body: string; authorId: string; authorName: string; createdAt: string }
+export interface TaskComment { id: string; body: string; authorId: string; authorName: string; authorAvatar: string | null; createdAt: string }
 export interface TaskActivityItem { id: string; verb: string; actorName: string | null; createdAt: string; meta: unknown }
 export interface TaskAttachment { id: string; fileName: string; filePath: string; fileSize: number | null; contentType: string | null; uploaderName: string | null; createdAt: string }
-export interface TaskWatcher { userId: string; name: string }
+export interface TaskWatcher { userId: string; name: string; avatar: string | null }
 export interface TaskLink { id: string; taskId: string; title: string; status: TaskStatusT }
 
 export interface TaskDetail extends TaskListItem {
@@ -150,16 +151,16 @@ export async function getTaskDetail(id: string): Promise<TaskDetail | null> {
     due_date: taskData.due_date, start_date: taskData.start_date,
     departmentId: taskData.department_id, departmentName: taskData.department_id ? deptNames.get(taskData.department_id) ?? null : null,
     projectId: taskData.project_id, parentTaskId: taskData.parent_task_id, ownerId: taskData.owner_id,
-    assigneeId: taskData.assignee_id, assigneeName: a?.full_name ?? null, assigneeTeamId: a?.team_id ?? null,
+    assigneeId: taskData.assignee_id, assigneeName: a?.full_name ?? null, assigneeAvatar: a?.avatar_url ?? null, assigneeTeamId: a?.team_id ?? null,
     tags: taskData.tags ?? [], isOverdue: isOverdue(taskData.due_date, taskData.status),
     commentCount: comments.length, subtaskCount: all.filter((t) => t.parentTaskId === id).length,
     watcherCount: watchers.length,
     description: taskData.description, ownerName: people.get(taskData.owner_id)?.full_name ?? null,
     estimatedHours: taskData.estimated_hours, actualHours: taskData.actual_hours, createdAt: taskData.created_at,
-    comments: comments.map((c) => ({ id: c.id, body: c.body, authorId: c.author_id, authorName: people.get(c.author_id)?.full_name ?? 'Unknown', createdAt: c.created_at })),
+    comments: comments.map((c) => ({ id: c.id, body: c.body, authorId: c.author_id, authorName: people.get(c.author_id)?.full_name ?? 'Unknown', authorAvatar: people.get(c.author_id)?.avatar_url ?? null, createdAt: c.created_at })),
     activity: activity.map((x) => ({ id: x.id, verb: x.verb, actorName: x.actor_id ? people.get(x.actor_id)?.full_name ?? null : null, createdAt: x.created_at, meta: x.meta })),
     attachments: attachments.map((f) => ({ id: f.id, fileName: f.file_name, filePath: f.file_path, fileSize: f.file_size, contentType: f.content_type, uploaderName: f.uploader_id ? people.get(f.uploader_id)?.full_name ?? null : null, createdAt: f.created_at })),
-    watchers: watchers.map((w) => ({ userId: w.user_id, name: people.get(w.user_id)?.full_name ?? 'Unknown' })),
+    watchers: watchers.map((w) => ({ userId: w.user_id, name: people.get(w.user_id)?.full_name ?? 'Unknown', avatar: people.get(w.user_id)?.avatar_url ?? null })),
     dependencies: deps.map((d) => linkOf(d.id, d.depends_on_task_id, byId)).filter(Boolean) as TaskLink[],
     dependents: depsOn.map((d) => linkOf(d.id, d.task_id, byId)).filter(Boolean) as TaskLink[],
     subtasks: all.filter((t) => t.parentTaskId === id),

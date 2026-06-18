@@ -26,13 +26,16 @@ export function Skeleton({ className }: { className?: string }) {
   return <div className={cn('shimmer rounded-sm bg-white/[0.05]', className)} />;
 }
 
-/** Circular avatar with initials fallback (only place `rounded-full` is used). */
+/** Circular avatar — shows the uploaded photo when `src` is set, else initials.
+ *  (Only place `rounded-full` is used.) */
 export function Avatar({
   name,
+  src,
   size = 28,
   className,
 }: {
   name: string;
+  src?: string | null;
   size?: number;
   className?: string;
 }) {
@@ -42,6 +45,20 @@ export function Avatar({
     .slice(0, 2)
     .join('')
     .toUpperCase();
+
+  if (src) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={name}
+        width={size}
+        height={size}
+        className={cn('inline-block shrink-0 rounded-full object-cover ring-1 ring-inset ring-white/10', className)}
+        style={{ width: size, height: size }}
+      />
+    );
+  }
   return (
     <span
       className={cn(

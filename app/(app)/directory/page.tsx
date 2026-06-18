@@ -6,15 +6,22 @@ import { roleLabel } from '@/lib/roles';
 import { PageHeader } from '@/components/page-header';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/states';
+import { Avatar } from '@/components/ui/misc';
+import { can } from '@/lib/rbac';
 import type { Role } from '@/types/enums';
 
 export default async function DirectoryPage() {
-  await requireUser();
+  const user = await requireUser();
   const people = await getDirectory();
+  const canInvite = can(user.role, 'user:create');
 
   return (
     <div className="mx-auto max-w-[1000px]">
-      <PageHeader title="Team Directory" subtitle="Who's who and what they're carrying" />
+      <PageHeader
+        title="Team Directory"
+        subtitle="Who's who and what they're carrying"
+        action={canInvite ? { href: '/employees/new', label: 'Add member' } : undefined}
+      />
       {people.length === 0 ? (
         <EmptyState icon={Users} title="No team members yet" description="People appear here once they're added to the workspace." />
       ) : (
@@ -26,9 +33,7 @@ export default async function DirectoryPage() {
             className="flex flex-col gap-3 rounded-sm border border-border bg-card p-4 transition-colors hover:border-accent/40"
           >
             <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-sm bg-accent-soft text-body-sm font-semibold text-accent">
-                {p.full_name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
-              </span>
+              <Avatar name={p.full_name} src={p.avatar_url} size={40} />
               <div className="min-w-0">
                 <p className="truncate text-body-sm font-medium text-text">{p.full_name}</p>
                 <p className="truncate text-caption text-text-muted">{p.designation ?? roleLabel(p.role as Role)}</p>

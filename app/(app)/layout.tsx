@@ -24,6 +24,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <AppShell
       userName={user?.fullName ?? 'Sarion Team'}
       userRole={user ? roleLabel(user.role) : 'Team Member'}
+      avatarUrl={user?.avatarUrl ?? null}
       accountHref="/settings"
       notifications={chrome.notifications}
       quickPerms={quickPerms}

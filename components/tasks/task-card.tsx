@@ -36,7 +36,7 @@ export function TaskCard({ task, showStatus = false }: { task: TaskListItem; sho
           {task.commentCount > 0 && <span className="inline-flex items-center gap-1"><MessageSquare className="h-3.5 w-3.5" /> {task.commentCount}</span>}
           {task.subtaskCount > 0 && <span className="inline-flex items-center gap-1"><GitBranch className="h-3.5 w-3.5" /> {task.subtaskCount}</span>}
         </div>
-        {task.assigneeName ? <Avatar name={task.assigneeName} size={22} /> : <span className="text-[11px]">Unassigned</span>}
+        {task.assigneeName ? <Avatar name={task.assigneeName} src={task.assigneeAvatar} size={22} /> : <span className="text-[11px]">Unassigned</span>}
       </div>
     </Link>
   );

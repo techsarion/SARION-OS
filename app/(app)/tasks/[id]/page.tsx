@@ -111,7 +111,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
                 <ul className="space-y-3">
                   {task.comments.map((c) => (
                     <li key={c.id} className="flex gap-3">
-                      <Avatar name={c.authorName} size={30} />
+                      <Avatar name={c.authorName} src={c.authorAvatar} size={30} />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span className="text-body-sm font-medium text-text">{c.authorName}</span>
@@ -188,7 +188,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
                 <div className="flex flex-wrap gap-2">
                   {task.watchers.map((w) => (
                     <span key={w.userId} className="inline-flex items-center gap-1.5 text-caption text-text-secondary">
-                      <Avatar name={w.name} size={20} /> {w.name}
+                      <Avatar name={w.name} src={w.avatar} size={20} /> {w.name}
                     </span>
                   ))}
                 </div>

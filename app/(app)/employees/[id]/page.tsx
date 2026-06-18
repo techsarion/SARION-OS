@@ -46,7 +46,7 @@ export default async function EmployeeProfilePage({ params }: { params: Promise<
         <Card>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-3">
-              <Avatar name={employee.full_name} size={56} />
+              <Avatar name={employee.full_name} src={employee.avatar_url} size={56} />
               <div className="min-w-0">
                 <p className="truncate text-h3 text-text">{employee.full_name}</p>
                 <div className="mt-1 flex items-center gap-2">
@@ -114,7 +114,7 @@ export default async function EmployeeProfilePage({ params }: { params: Promise<
               <div className="divide-y divide-border">
                 {reports.map((r) => (
                   <Link key={r.id} href={`/employees/${r.id}`} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-white/[0.02]">
-                    <Avatar name={r.full_name} size={28} />
+                    <Avatar name={r.full_name} src={r.avatar_url} size={28} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-body-sm font-medium text-text">{r.full_name}</p>
                       <p className="truncate text-caption text-text-muted">{r.designation ?? roleLabel(r.role as never)}</p>

@@ -80,7 +80,7 @@ export function EmployeeDirectory({
               href={`/employees/${e.id}`}
               className="flex items-center gap-3 rounded-sm border border-border bg-card px-3.5 py-3 transition-colors hover:border-accent/40 hover:bg-white/[0.02]"
             >
-              <Avatar name={e.full_name} size={38} />
+              <Avatar name={e.full_name} src={e.avatar_url} size={38} />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-body-sm font-medium text-text">{e.full_name}</p>
                 <p className="truncate text-caption text-text-muted">{e.designation ?? ROLE_LABEL[e.role as Role]} · {e.departmentName ?? 'No department'}</p>

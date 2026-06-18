@@ -62,6 +62,26 @@ export async function updateEmployee(id: string, _prev: unknown, formData: FormD
   }
 }
 
+/** Save the signed-in user's avatar URL (file already uploaded to storage). */
+export async function updateOwnAvatar(avatarUrl: string | null): Promise<ActionResult> {
+  const user = await getCurrentUser();
+  if (!user) return fail('You must be signed in.', { code: 'unauthenticated' });
+  if (avatarUrl !== null && !/^https?:\/\//.test(avatarUrl)) return fail('Invalid image URL.');
+  try {
+    const supabase = await createClient();
+    const patch: ProfileUpdate = { avatar_url: avatarUrl };
+    const { error } = await supabase.from('profiles').update(patch as never).eq('id', user.id);
+    if (error) return fail(error.message);
+    await logActivity({ action: 'user.self_update', resourceType: 'profile', resourceId: user.id, after: { avatar: avatarUrl ? 'set' : 'removed' } });
+    revalidatePath('/settings');
+    revalidatePath(`/employees/${user.id}`);
+    revalidatePath('/directory');
+    return ok();
+  } catch (err) {
+    return failFrom(err);
+  }
+}
+
 /** Self-service profile edit (any authenticated user, own record only). */
 export async function updateOwnProfile(_prev: unknown, formData: FormData): Promise<ActionResult> {
   const user = await getCurrentUser();

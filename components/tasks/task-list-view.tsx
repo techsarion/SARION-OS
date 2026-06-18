@@ -34,7 +34,7 @@ export function TaskListView({ tasks }: { tasks: TaskListItem[] }) {
                 <td className="px-4 py-2.5"><StatusBadge status={t.status} /></td>
                 <td className="px-4 py-2.5">
                   {t.assigneeName ? (
-                    <span className="inline-flex items-center gap-2"><Avatar name={t.assigneeName} size={22} /> <span className="text-text-secondary">{t.assigneeName}</span></span>
+                    <span className="inline-flex items-center gap-2"><Avatar name={t.assigneeName} src={t.assigneeAvatar} size={22} /> <span className="text-text-secondary">{t.assigneeName}</span></span>
                   ) : <span className="text-text-muted">—</span>}
                 </td>
                 <td className="px-4 py-2.5">

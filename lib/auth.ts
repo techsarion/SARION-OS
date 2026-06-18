@@ -11,6 +11,7 @@ export interface CurrentUser {
   fullName: string;
   role: Role;
   departmentId: string | null;
+  avatarUrl: string | null;
 }
 
 /** Returns the authenticated user's profile, or null if not signed in. */
@@ -23,7 +24,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, email, full_name, role, department_id')
+    .select('id, email, full_name, role, department_id, avatar_url')
     .eq('id', user.id)
     .single<{
       id: string;
@@ -31,6 +32,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
       full_name: string;
       role: Role;
       department_id: string | null;
+      avatar_url: string | null;
     }>();
 
   if (!profile) return null;
@@ -40,6 +42,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     fullName: profile.full_name,
     role: profile.role,
     departmentId: profile.department_id ?? null,
+    avatarUrl: profile.avatar_url ?? null,
   };
 }
 
