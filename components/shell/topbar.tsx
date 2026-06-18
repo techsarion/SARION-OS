@@ -1,12 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-import { ChevronDown } from 'lucide-react';
-import { Avatar } from '@/components/ui/misc';
 import { GlobalSearch } from '@/components/shell/global-search';
 import { QuickMenu, type QuickPerms } from '@/components/shell/quick-menu';
 import { NotificationsBell } from '@/components/shell/notifications-bell';
 import { MobileNav } from '@/components/shell/mobile-nav';
+import { UserMenu } from '@/components/shell/user-menu';
 import type { NotificationItem } from '@/lib/server/data/workspace';
 
 export function Topbar({
@@ -37,18 +35,7 @@ export function Topbar({
 
         <div className="mx-1 h-6 w-px bg-border" />
 
-        <Link
-          href={accountHref ?? '#'}
-          title="Your account & password"
-          className="flex items-center gap-2 rounded-sm py-1 pl-1 pr-1.5 transition-colors duration-fast hover:bg-white/[0.05]"
-        >
-          <Avatar name={userName} src={avatarUrl} size={26} />
-          <div className="hidden text-left leading-tight lg:block">
-            <div className="text-caption font-medium text-text">{userName}</div>
-            <div className="text-[11px] text-text-muted">{userRole}</div>
-          </div>
-          <ChevronDown className="h-3.5 w-3.5 text-text-muted" />
-        </Link>
+        <UserMenu userName={userName} userRole={userRole} avatarUrl={avatarUrl} accountHref={accountHref} />
       </div>
     </header>
   );

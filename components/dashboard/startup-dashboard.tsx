@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {
   CalendarDays, CheckCircle2, Clock, ListTodo, Target, Activity,
-  TrendingUp, Gauge, CalendarClock, AlarmClock, CheckSquare, Sunrise, Moon,
+  TrendingUp, Gauge, CalendarClock, AlarmClock, CheckSquare, Sunrise, Sun, Moon,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,11 +12,11 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { MEETING_TYPE_META } from '@/lib/meetings/constants';
 import type { StartupDashboard } from '@/lib/server/data/dashboard';
 
-function greeting(): string {
+function greeting(): { label: string; Icon: typeof Sunrise; color: string } {
   const h = new Date().getHours();
-  if (h < 12) return 'Good morning';
-  if (h < 17) return 'Good afternoon';
-  return 'Good evening';
+  if (h < 12) return { label: 'Good morning', Icon: Sunrise, color: 'text-warning' };
+  if (h < 17) return { label: 'Good afternoon', Icon: Sun, color: 'text-accent-cyan' };
+  return { label: 'Good evening', Icon: Moon, color: 'text-accent' };
 }
 
 export function StartupDashboard({ firstName, data: d }: { firstName: string; data: StartupDashboard }) {
@@ -38,10 +38,12 @@ export function StartupDashboard({ firstName, data: d }: { firstName: string; da
     { label: 'Team performance', value: `${d.teamPerformance}%`, icon: Gauge, tone: 'var(--accent-cyan)' },
   ];
 
+  const g = greeting();
   return (
     <div className="mx-auto max-w-[1320px] space-y-6 fade-up">
       <DashboardHeader
-        title={`${greeting()}, ${firstName}`}
+        title={`${g.label}, ${firstName}`}
+        icon={<g.Icon className={`h-6 w-6 ${g.color}`} />}
         subtitle="Here's where the team stands"
         badge={d.overdue ? { tone: 'warning', label: `${d.overdue} overdue` } : { tone: 'success', label: 'On track' }}
         action={<Link href="/tasks" className={buttonVariants({ variant: 'primary', size: 'md' })}><CheckSquare className="h-4 w-4" /> My tasks</Link>}

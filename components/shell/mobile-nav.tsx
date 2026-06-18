@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LayoutDashboard, LogOut } from 'lucide-react';
 import { NAV_GROUPS } from '@/components/nav-items';
 import { NAV_ICONS as ICONS } from '@/components/shell/nav-icons';
 import { Logo } from '@/components/brand/logo';
+import { signOut } from '@/lib/actions/auth';
 import { cn } from '@/lib/utils';
 
 /** Mobile navigation — hamburger trigger + slide-in drawer. Hidden on md+ where
@@ -79,6 +80,16 @@ export function MobileNav({ counts = {} }: { counts?: Record<string, number> }) 
                 </div>
               ))}
             </nav>
+            <div className="border-t border-border p-2">
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="flex w-full items-center gap-2.5 rounded-sm px-2.5 py-2 text-body-sm text-text-secondary transition-colors hover:bg-danger-soft hover:text-danger"
+                >
+                  <LogOut className="h-[18px] w-[18px]" /> Sign out
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       )}
