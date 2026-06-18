@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { AlertTriangle, Clock, Inbox, Activity, CheckCircle2 } from 'lucide-react';
+import { AlertTriangle, Clock, Inbox, Activity, CheckCircle2, Sparkles } from 'lucide-react';
 import type { NotificationItem, ActivityFeedItem } from '@/lib/server/data/workspace';
 
-const ATT_ICON = { overdue: AlertTriangle, due_soon: Clock, review: Inbox } as const;
-const ATT_TONE = { overdue: 'text-danger', due_soon: 'text-warning', review: 'text-accent' } as const;
+const ATT_ICON = { overdue: AlertTriangle, due_soon: Clock, review: Inbox, reminder: Sparkles } as const;
+const ATT_TONE = { overdue: 'text-danger', due_soon: 'text-warning', review: 'text-accent', reminder: 'text-info' } as const;
 
 function ago(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();

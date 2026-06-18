@@ -14,9 +14,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const quickPerms = user
     ? {
         task: can(user.role, 'task:create'),
+        meeting: can(user.role, 'meeting:create'),
+        target: can(user.role, 'target:create'),
         account: can(user.role, 'user:create'),
-        dept: can(user.role, 'dept:create'),
-        team: can(user.role, 'team:create'),
       }
     : undefined;
 
@@ -24,7 +24,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <AppShell
       userName={user?.fullName ?? 'Sarion Team'}
       userRole={user ? roleLabel(user.role) : 'Team Member'}
-      accountHref={user ? `/employees/${user.id}` : undefined}
+      accountHref="/settings"
       notifications={chrome.notifications}
       quickPerms={quickPerms}
       navCounts={{ '/tasks': chrome.myOpenTaskCount }}

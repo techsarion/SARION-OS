@@ -2,27 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  LayoutDashboard,
-  CheckSquare,
-  Building2,
-  Users,
-  UserRound,
-  PanelLeftClose,
-  PanelLeftOpen,
-  type LucideIcon,
-} from 'lucide-react';
+import { PanelLeftClose, PanelLeftOpen, LayoutDashboard } from 'lucide-react';
 import { NAV_GROUPS } from '@/components/nav-items';
+import { NAV_ICONS as ICONS } from '@/components/shell/nav-icons';
 import { Logo } from '@/components/brand/logo';
 import { cn } from '@/lib/utils';
-
-const ICONS: Record<string, LucideIcon> = {
-  'layout-dashboard': LayoutDashboard,
-  'check-square': CheckSquare,
-  'building-2': Building2,
-  users: Users,
-  'user-round': UserRound,
-};
 
 export function Sidebar({
   collapsed,

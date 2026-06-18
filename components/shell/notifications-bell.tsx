@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Bell, AlertTriangle, Clock, Inbox } from 'lucide-react';
+import { Bell, AlertTriangle, Clock, Inbox, Sparkles } from 'lucide-react';
 import type { NotificationItem } from '@/lib/server/data/workspace';
 
-const ICON = { overdue: AlertTriangle, due_soon: Clock, review: Inbox } as const;
-const TONE = { overdue: 'text-danger', due_soon: 'text-warning', review: 'text-accent' } as const;
+const ICON = { overdue: AlertTriangle, due_soon: Clock, review: Inbox, reminder: Sparkles } as const;
+const TONE = { overdue: 'text-danger', due_soon: 'text-warning', review: 'text-accent', reminder: 'text-info' } as const;
 
 export function NotificationsBell({ items }: { items: NotificationItem[] }) {
   const [open, setOpen] = useState(false);

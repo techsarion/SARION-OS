@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, CheckSquare, UserRound, Building2, Users, Loader2 } from 'lucide-react';
+import { Search, CheckSquare, UserRound, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Kbd } from '@/components/ui/misc';
 
@@ -43,11 +43,9 @@ export function GlobalSearch() {
     const handle = setTimeout(async () => {
       const supabase = createClient();
       const like = `%${term}%`;
-      const [people, tasks, depts, teams] = await Promise.all([
-        supabase.from('profiles').select('id, full_name, email, designation').or(`full_name.ilike.${like},email.ilike.${like}`).limit(5),
-        supabase.from('tasks').select('id, title, status').ilike('title', like).is('deleted_at', null).limit(5),
-        supabase.from('departments').select('id, name').ilike('name', like).is('deleted_at', null).limit(4),
-        supabase.from('teams').select('id, name').ilike('name', like).limit(4),
+      const [people, tasks] = await Promise.all([
+        supabase.from('profiles').select('id, full_name, email, designation').or(`full_name.ilike.${like},email.ilike.${like}`).limit(6),
+        supabase.from('tasks').select('id, title, status').ilike('title', like).is('deleted_at', null).limit(6),
       ]);
       const out: Result[] = [];
       for (const p of (people.data ?? []) as { id: string; full_name: string; email: string; designation: string | null }[]) {
@@ -55,12 +53,6 @@ export function GlobalSearch() {
       }
       for (const t of (tasks.data ?? []) as { id: string; title: string; status: string }[]) {
         out.push({ id: `t-${t.id}`, label: t.title, sub: `Task · ${t.status.replace('_', ' ').toLowerCase()}`, href: `/tasks/${t.id}`, group: 'Tasks', icon: CheckSquare });
-      }
-      for (const d of (depts.data ?? []) as { id: string; name: string }[]) {
-        out.push({ id: `d-${d.id}`, label: d.name, sub: 'Department', href: `/departments/${d.id}/edit`, group: 'Departments', icon: Building2 });
-      }
-      for (const tm of (teams.data ?? []) as { id: string; name: string }[]) {
-        out.push({ id: `tm-${tm.id}`, label: tm.name, sub: 'Team', href: `/teams/${tm.id}/edit`, group: 'Teams', icon: Users });
       }
       setResults(out);
       setActive(0);
@@ -89,7 +81,7 @@ export function GlobalSearch() {
           onChange={(e) => setQ(e.target.value)}
           onFocus={() => { if (results.length) setOpen(true); }}
           onKeyDown={onKeyDown}
-          placeholder="Search people, tasks, departments…"
+          placeholder="Search people and tasks…"
           className="flex-1 bg-transparent text-text outline-none placeholder:text-text-muted"
           aria-label="Search"
         />

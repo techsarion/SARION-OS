@@ -3,10 +3,11 @@ import 'server-only';
 // recent-activity feed. All derived from live tables (RLS-scoped) — no mock data.
 import { createClient } from '@/lib/supabase/server';
 import { getTasks, type TaskListItem } from '@/lib/server/data/tasks';
+import { weekStartISO } from '@/lib/server/data/weekly-review';
 
 export interface NotificationItem {
   id: string;
-  kind: 'overdue' | 'due_soon' | 'review';
+  kind: 'overdue' | 'due_soon' | 'review' | 'reminder';
   title: string;
   detail: string;
   href: string;
@@ -44,8 +45,8 @@ function buildNotifications(tasks: TaskListItem[], userId: string): Notification
       items.push({ id: t.id, kind: 'review', title: t.title, detail: 'In review', href: `/tasks/${t.id}` });
     }
   }
-  // Overdue first, then due-soon, then review.
-  const order = { overdue: 0, due_soon: 1, review: 2 } as const;
+  // Overdue first, then due-soon, then review, then reminders.
+  const order = { overdue: 0, due_soon: 1, review: 2, reminder: 3 } as const;
   return items.sort((a, b) => order[a.kind] - order[b.kind]).slice(0, 12);
 }
 
@@ -68,10 +69,44 @@ async function getRecentActivity(tasks: TaskListItem[], limit = 10): Promise<Act
   }));
 }
 
+/**
+ * Daily-rhythm reminders, surfaced in the same notifications chrome. Purely
+ * data-driven (presence of today's check-ins / this week's review) + the local
+ * time of day — no background jobs needed.
+ */
+async function buildReminders(userId: string): Promise<NotificationItem[]> {
+  const supabase = await createClient();
+  const today = todayISO();
+  const week = weekStartISO();
+  const hour = new Date().getHours();
+
+  const [{ data: checkIns }, { data: review }] = await Promise.all([
+    supabase.from('check_ins').select('kind').eq('user_id', userId).eq('entry_date', today),
+    supabase.from('weekly_reviews').select('id').eq('user_id', userId).eq('week_start', week).maybeSingle<{ id: string }>(),
+  ]);
+  const kinds = new Set(((checkIns ?? []) as { kind: string }[]).map((c) => c.kind));
+  const items: NotificationItem[] = [];
+
+  // Morning check-in (before noon, if not yet done).
+  if (hour < 12 && !kinds.has('MORNING')) {
+    items.push({ id: 'rem-checkin', kind: 'reminder', title: 'Start your day with a check-in', detail: 'Set your focus and priorities', href: '/check-in' });
+  }
+  // End-of-day (from 4pm, if not yet done).
+  if (hour >= 16 && !kinds.has('EOD')) {
+    items.push({ id: 'rem-eod', kind: 'reminder', title: 'Log your end-of-day update', detail: "Wrap up what got done today", href: '/end-of-day' });
+  }
+  // Weekly review (Thursday → Sunday, if not yet done this week).
+  const dow = new Date().getDay(); // 0 Sun … 6 Sat
+  if ((dow === 0 || dow >= 4) && !review) {
+    items.push({ id: 'rem-review', kind: 'reminder', title: 'Complete your weekly review', detail: 'Reflect on the week and plan carry-overs', href: '/weekly-review' });
+  }
+  return items;
+}
+
 /** One call for the layout — notifications, nav badge, and recent activity. */
 export async function getChromeData(userId: string): Promise<ChromeData> {
-  const tasks = await getTasks();
-  const notifications = buildNotifications(tasks, userId);
+  const [tasks, reminders] = await Promise.all([getTasks(), buildReminders(userId)]);
+  const notifications = [...reminders, ...buildNotifications(tasks, userId)];
   const myOpenTaskCount = tasks.filter((t) => t.assigneeId === userId && t.status !== 'COMPLETED').length;
   const recentActivity = await getRecentActivity(tasks);
   return { notifications, myOpenTaskCount, recentActivity };

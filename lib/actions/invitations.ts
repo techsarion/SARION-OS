@@ -138,7 +138,7 @@ export async function revokeInvitation(id: string): Promise<ActionResult> {
 const acceptSchema = z.object({
   token: z.string().min(8, 'This invitation link is invalid.'),
   full_name: z.string().min(2, 'Enter your full name.').max(120),
-  password: z.string().min(8, 'Password must be at least 8 characters.'),
+  password: z.string().min(8, 'Password must be at least 8 characters.').max(72, 'Password must be 72 characters or fewer.'),
 });
 
 export async function acceptInvitation(_prev: unknown, formData: FormData): Promise<ActionResult> {

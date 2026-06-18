@@ -36,8 +36,8 @@ export function ProductivityChart({ data }: { data: { name: string; value: numbe
       <AreaChart data={data} margin={{ top: 8, right: 6, left: -18, bottom: 0 }}>
         <defs>
           <linearGradient id="sarionArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#2f80f7" stopOpacity={0.32} />
-            <stop offset="100%" stopColor="#2f80f7" stopOpacity={0} />
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.32} />
+            <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
           </linearGradient>
         </defs>
         <XAxis dataKey="name" tick={AXIS} axisLine={false} tickLine={false} />
@@ -46,11 +46,11 @@ export function ProductivityChart({ data }: { data: { name: string; value: numbe
         <Area
           type="monotone"
           dataKey="value"
-          stroke="#2f80f7"
+          stroke="var(--accent)"
           strokeWidth={2}
           fill="url(#sarionArea)"
           dot={false}
-          activeDot={{ r: 3, fill: '#2f80f7', stroke: 'var(--card)', strokeWidth: 2 }}
+          activeDot={{ r: 3, fill: 'var(--accent)', stroke: 'var(--card)', strokeWidth: 2 }}
         />
       </AreaChart>
     </ResponsiveContainer>
@@ -92,8 +92,8 @@ export function HealthGauge({ value }: { value: number }) {
       <svg width="140" height="140" viewBox="0 0 140 140" className="-rotate-[135deg]">
         <defs>
           <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#2f80f7" />
-            <stop offset="100%" stopColor="#1fc8e6" />
+            <stop offset="0%" stopColor="var(--accent)" />
+            <stop offset="100%" stopColor="var(--accent-cyan)" />
           </linearGradient>
         </defs>
         <circle
@@ -127,7 +127,7 @@ export function HealthGauge({ value }: { value: number }) {
 }
 
 /** Inline KPI sparkline. */
-export function Sparkline({ data, tone = '#2f80f7' }: { data: number[]; tone?: string }) {
+export function Sparkline({ data, tone = 'var(--accent)' }: { data: number[]; tone?: string }) {
   const points = data.map((v, i) => ({ name: i, value: v }));
   return (
     <ResponsiveContainer width="100%" height={36}>

@@ -138,17 +138,6 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <label htmlFor="remember" className="flex cursor-pointer select-none items-center gap-2 text-body-sm text-text-secondary">
-                <input
-                  id="remember"
-                  name="remember"
-                  type="checkbox"
-                  defaultChecked
-                  className="h-4 w-4 shrink-0 cursor-pointer rounded-sm border-border-strong bg-surface-2 text-accent accent-accent"
-                />
-                Keep me signed in on this device
-              </label>
-
               {state?.error && (
                 <div className="flex items-center gap-2 rounded-sm border border-danger/30 bg-danger-soft px-3 py-2 text-caption text-danger">
                   <Lock className="h-3.5 w-3.5 shrink-0" />

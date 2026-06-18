@@ -16,7 +16,7 @@ export interface Kpi {
 }
 
 export function KpiCard({ kpi }: { kpi: Kpi }) {
-  const tone = kpi.tone ?? '#2f80f7';
+  const tone = kpi.tone ?? 'var(--accent)';
   const DeltaIcon = kpi.trend === 'down' ? ArrowDownRight : ArrowUpRight;
   return (
     <div className="group rounded-sm border border-border bg-card p-4 shadow-e1 transition-colors duration-fast hover:border-border-strong">

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { requirePermission } from '@/lib/auth';
 import { getTaskDetail } from '@/lib/server/data/tasks';
-import { getProfilesLite, getDepartments } from '@/lib/server/data/org';
+import { getProfilesLite } from '@/lib/server/data/org';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { TaskForm } from '@/components/tasks/task-form';
@@ -11,7 +11,7 @@ export const metadata = { title: 'Edit task — Sarion Team OS' };
 export default async function EditTaskPage({ params }: { params: Promise<{ id: string }> }) {
   await requirePermission('task:create');
   const { id } = await params;
-  const [task, assignees, departments] = await Promise.all([getTaskDetail(id), getProfilesLite(), getDepartments()]);
+  const [task, assignees] = await Promise.all([getTaskDetail(id), getProfilesLite()]);
   if (!task) notFound();
 
   return (
@@ -27,7 +27,6 @@ export default async function EditTaskPage({ params }: { params: Promise<{ id: s
             estimated_hours: task.estimatedHours, tags: task.tags,
           }}
           assignees={assignees}
-          departments={departments.map((d) => ({ id: d.id, name: d.name }))}
         />
       </CardContent></Card>
     </div>

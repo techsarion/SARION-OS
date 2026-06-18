@@ -11,6 +11,8 @@ export const PERMISSIONS = [
   'task:read', 'task:create', 'task:assign', 'task:transition', 'task:delete',
   'project:read', 'project:create', 'project:assign',
   'meeting:read', 'meeting:create', 'meeting:conduct', 'meeting:minute', 'meeting:close',
+  'target:read', 'target:create', 'target:update', 'target:delete',
+  'checkin:read', 'checkin:write', 'review:read', 'review:write',
   'approval:create', 'approval:decide', 'approval:configure',
   'goal:read', 'goal:create', 'goal:update',
   'document:read', 'document:create', 'document:version',
@@ -19,18 +21,13 @@ export const PERMISSIONS = [
 
 export type Permission = (typeof PERMISSIONS)[number];
 
+// Sarion Team OS is a small, all-admin team (CEO / Managing Director / Marketing
+// Officer). The three active roles are granted everything ('*'); the legacy
+// lower roles remain only for completeness and are not assigned to anyone.
 export const ROLE_PERMISSIONS: Record<Role, Permission[] | '*'> = {
   [Role.SUPER_ADMIN]: '*',
-  [Role.MANAGING_DIRECTOR]: [
-    'user:read', 'dept:read', 'team:read', 'team:create', 'analytics:company', 'audit:read',
-    'task:read', 'task:create', 'task:assign', 'task:transition',
-    'project:read', 'project:create', 'project:assign',
-    'meeting:read', 'meeting:create', 'meeting:conduct', 'meeting:minute', 'meeting:close',
-    'approval:create', 'approval:decide', 'approval:configure',
-    'goal:read', 'goal:create', 'goal:update',
-    'document:read', 'document:create', 'document:version',
-    'automation:manage', 'ai:use', 'ai:exec',
-  ],
+  [Role.MANAGING_DIRECTOR]: '*',
+  [Role.MARKETING_OFFICER]: '*',
   [Role.DEPARTMENT_HEAD]: [
     'user:read', 'user:create', 'user:status', 'dept:read', 'team:read', 'team:create',
     'task:read', 'task:create', 'task:assign', 'task:transition',
@@ -47,15 +44,6 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[] | '*'> = {
     'project:read',
     'meeting:read', 'meeting:create', 'meeting:conduct',
     'approval:create', 'goal:read', 'goal:create', 'goal:update',
-    'document:read', 'document:create', 'document:version', 'ai:use',
-  ],
-  [Role.MARKETING_OFFICER]: [
-    'user:read', 'dept:read', 'team:read',
-    'task:read', 'task:create', 'task:assign', 'task:transition',
-    'project:read', 'project:create',
-    'meeting:read', 'meeting:create',
-    'approval:create',
-    'goal:read', 'goal:create', 'goal:update',
     'document:read', 'document:create', 'document:version', 'ai:use',
   ],
   [Role.EMPLOYEE]: [

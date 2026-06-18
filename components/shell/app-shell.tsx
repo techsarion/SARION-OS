@@ -48,7 +48,7 @@ export function AppShell({
     <div className="flex min-h-screen bg-bg">
       <Sidebar collapsed={collapsed} onToggle={toggle} counts={navCounts} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar userName={userName} userRole={userRole} accountHref={accountHref} notifications={notifications} quickPerms={quickPerms} />
+        <Topbar userName={userName} userRole={userRole} accountHref={accountHref} notifications={notifications} quickPerms={quickPerms} navCounts={navCounts} />
         <main className="flex-1 overflow-x-hidden px-5 py-5 lg:px-7 lg:py-6">{children}</main>
       </div>
       {showInsights && <InsightsPanel notifications={notifications} recentActivity={recentActivity} />}

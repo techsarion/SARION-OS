@@ -21,14 +21,12 @@ export function TaskForm({
   taskId,
   defaults,
   assignees,
-  departments,
   parentTaskId,
 }: {
   mode: 'create' | 'edit';
   taskId?: string;
   defaults?: Defaults;
   assignees: { id: string; full_name: string }[];
-  departments: { id: string; name: string }[];
   parentTaskId?: string;
 }) {
   const action = (mode === 'edit' ? updateTask.bind(null, taskId!) : createTask) as
@@ -64,7 +62,7 @@ export function TaskForm({
         <FieldError messages={fe?.description} />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">
           <Label htmlFor="priority">Priority</Label>
           <Select id="priority" name="priority" defaultValue={defaults?.priority ?? 'P2'}>
@@ -72,26 +70,12 @@ export function TaskForm({
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="department_id">Department</Label>
-          <Select id="department_id" name="department_id" defaultValue={defaults?.department_id ?? ''}>
-            <option value="">— Inherit mine —</option>
-            {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-          </Select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="space-y-1.5">
           <Label htmlFor="start_date">Start date</Label>
           <Input id="start_date" name="start_date" type="date" defaultValue={defaults?.start_date ?? ''} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="due_date">Due date</Label>
           <Input id="due_date" name="due_date" type="date" defaultValue={defaults?.due_date ?? ''} />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="estimated_hours">Est. hours</Label>
-          <Input id="estimated_hours" name="estimated_hours" type="number" min={0} step="0.5" defaultValue={defaults?.estimated_hours ?? ''} />
         </div>
       </div>
 

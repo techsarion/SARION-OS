@@ -127,6 +127,84 @@ type TaskAttachmentRow = {
 type TaskWatcherRow = { task_id: string; user_id: string; created_at: string };
 type TaskDependencyRow = { id: string; task_id: string; depends_on_task_id: string; created_at: string };
 
+type TargetPeriodEnum = 'DAILY' | 'WEEKLY' | 'MONTHLY';
+type TargetScopeEnum = 'PERSONAL' | 'TEAM';
+type TargetStatusEnum = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
+type MeetingTypeEnum = 'STANDUP' | 'WEEKLY_REVIEW' | 'MONTHLY_REVIEW' | 'STRATEGY';
+type MeetingStatusEnum = 'CREATED' | 'INVITED' | 'CONDUCTED' | 'MINUTED' | 'CLOSED';
+type MeetingRecurrenceEnum = 'NONE' | 'DAILY' | 'WEEKLY' | 'MONTHLY';
+
+type TargetRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  period: TargetPeriodEnum;
+  scope: TargetScopeEnum;
+  owner_id: string;
+  status: TargetStatusEnum;
+  progress: number;
+  due_date: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type MeetingRow = {
+  id: string;
+  title: string;
+  status: MeetingStatusEnum;
+  type: MeetingTypeEnum;
+  organizer_id: string;
+  department_id: string | null;
+  scheduled_at: string;
+  duration_min: number;
+  agenda: Json | null;
+  notes: string | null;
+  recording_url: string | null;
+  recurrence: MeetingRecurrenceEnum;
+  series_id: string | null;
+  created_at: string;
+};
+
+type MeetingParticipantRow = { meeting_id: string; user_id: string; created_at: string };
+type MeetingActionItemRow = {
+  id: string;
+  meeting_id: string;
+  description: string;
+  assignee_id: string | null;
+  task_id: string | null;
+  done: boolean;
+  due_date: string | null;
+  created_at: string;
+};
+
+type CheckinKindEnum = 'MORNING' | 'EOD';
+type CheckInRow = {
+  id: string;
+  user_id: string;
+  kind: CheckinKindEnum;
+  entry_date: string;
+  focus: string | null;
+  priorities: string | null;
+  progress: string | null;
+  completed: string | null;
+  unfinished: string | null;
+  notes: string | null;
+  blockers: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type WeeklyReviewRow = {
+  id: string;
+  user_id: string;
+  week_start: string;
+  completion_pct: number;
+  summary: string | null;
+  carry_forward: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export interface Database {
   // Version marker the Supabase typed client (postgrest-js ≥2.10) reads to
   // resolve table/insert types. `supabase gen types` emits this automatically.
@@ -197,6 +275,54 @@ export interface Database {
         Update: Partial<TaskDependencyRow>;
         Relationships: [];
       };
+      targets: {
+        Row: TargetRow;
+        Insert: {
+          title: string; owner_id: string; period: TargetPeriodEnum; description?: string | null;
+          scope?: TargetScopeEnum; status?: TargetStatusEnum; progress?: number; due_date?: string | null;
+        };
+        Update: Partial<TargetRow>;
+        Relationships: [];
+      };
+      meetings: {
+        Row: MeetingRow;
+        Insert: {
+          title: string; organizer_id: string; scheduled_at: string; type?: MeetingTypeEnum;
+          status?: MeetingStatusEnum; department_id?: string | null; duration_min?: number;
+          agenda?: Json | null; notes?: string | null; recording_url?: string | null;
+          recurrence?: MeetingRecurrenceEnum; series_id?: string | null;
+        };
+        Update: Partial<MeetingRow>;
+        Relationships: [];
+      };
+      meeting_participants: {
+        Row: MeetingParticipantRow;
+        Insert: { meeting_id: string; user_id: string };
+        Update: Partial<MeetingParticipantRow>;
+        Relationships: [];
+      };
+      meeting_action_items: {
+        Row: MeetingActionItemRow;
+        Insert: { meeting_id: string; description: string; assignee_id?: string | null; task_id?: string | null; done?: boolean; due_date?: string | null };
+        Update: Partial<MeetingActionItemRow>;
+        Relationships: [];
+      };
+      check_ins: {
+        Row: CheckInRow;
+        Insert: {
+          user_id: string; kind: CheckinKindEnum; entry_date?: string; focus?: string | null;
+          priorities?: string | null; progress?: string | null; completed?: string | null;
+          unfinished?: string | null; notes?: string | null; blockers?: string | null;
+        };
+        Update: Partial<CheckInRow>;
+        Relationships: [];
+      };
+      weekly_reviews: {
+        Row: WeeklyReviewRow;
+        Insert: { user_id: string; week_start: string; completion_pct?: number; summary?: string | null; carry_forward?: string | null };
+        Update: Partial<WeeklyReviewRow>;
+        Relationships: [];
+      };
       audit_log: {
         Row: AuditLogRow;
         Insert: { actor_id?: string | null; action: string; resource_type: string; resource_id?: string | null; before?: Json | null; after?: Json | null };
@@ -212,6 +338,13 @@ export interface Database {
       invitation_status: InvitationStatusEnum;
       task_status: 'DRAFT' | 'ASSIGNED' | 'IN_PROGRESS' | 'REVIEW' | 'APPROVED' | 'COMPLETED';
       priority: 'P0' | 'P1' | 'P2' | 'P3';
+      target_period: TargetPeriodEnum;
+      target_scope: TargetScopeEnum;
+      target_status: TargetStatusEnum;
+      meeting_type: MeetingTypeEnum;
+      meeting_status: MeetingStatusEnum;
+      meeting_recurrence: MeetingRecurrenceEnum;
+      checkin_kind: CheckinKindEnum;
     };
   };
 }

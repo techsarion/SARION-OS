@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Plus, CheckSquare, UserRoundPlus, Building2, Users } from 'lucide-react';
+import { Plus, CheckSquare, Calendar, Target, UserRoundPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export interface QuickPerms { task: boolean; account: boolean; dept: boolean; team: boolean }
+export interface QuickPerms { task: boolean; meeting: boolean; target: boolean; account: boolean }
 
 export function QuickMenu({ perms }: { perms: QuickPerms }) {
   const [open, setOpen] = useState(false);
@@ -19,9 +19,9 @@ export function QuickMenu({ perms }: { perms: QuickPerms }) {
 
   const items = [
     perms.task && { href: '/tasks/new', label: 'New task', icon: CheckSquare },
-    perms.account && { href: '/employees/new', label: 'Create account', icon: UserRoundPlus },
-    perms.dept && { href: '/departments/new', label: 'New department', icon: Building2 },
-    perms.team && { href: '/teams/new', label: 'New team', icon: Users },
+    perms.meeting && { href: '/meetings/new', label: 'New meeting', icon: Calendar },
+    perms.target && { href: '/daily-targets', label: 'New target', icon: Target },
+    perms.account && { href: '/employees/invite', label: 'Invite teammate', icon: UserRoundPlus },
   ].filter(Boolean) as { href: string; label: string; icon: typeof CheckSquare }[];
 
   if (items.length === 0) return null;
