@@ -62,7 +62,7 @@ export function TaskForm({
         <FieldError messages={fe?.description} />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         <div className="space-y-1.5">
           <Label htmlFor="priority">Priority</Label>
           <Select id="priority" name="priority" defaultValue={defaults?.priority ?? 'P2'}>

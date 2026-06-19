@@ -57,7 +57,7 @@ export function DependencyControl({
                 <Link href={`/tasks/${d.taskId}`} className="flex-1 truncate text-body-sm text-text hover:text-accent">{d.title}</Link>
                 <StatusBadge status={d.status} />
                 {canManage && (
-                  <button onClick={() => remove(d.id)} disabled={pending} aria-label="Remove" className="text-text-muted hover:text-danger"><X className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => remove(d.id)} disabled={pending} aria-label="Remove" className="-m-1 shrink-0 p-1 text-text-muted hover:text-danger"><X className="h-3.5 w-3.5" /></button>
                 )}
               </li>
             ))}
@@ -66,12 +66,12 @@ export function DependencyControl({
       </div>
 
       {canManage && candidates.length > 0 && (
-        <div className="flex items-center gap-2">
-          <Select value={pick} onChange={(e) => setPick(e.target.value)} className="flex-1">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <Select value={pick} onChange={(e) => setPick(e.target.value)} className="w-full sm:flex-1">
             <option value="">Add a blocking task…</option>
             {candidates.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
           </Select>
-          <Button size="sm" variant="secondary" onClick={add} disabled={pending || !pick}><Plus className="h-4 w-4" /> Add</Button>
+          <Button size="sm" variant="secondary" onClick={add} disabled={pending || !pick} className="w-full sm:w-auto"><Plus className="h-4 w-4" /> Add</Button>
         </div>
       )}
 

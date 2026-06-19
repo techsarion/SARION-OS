@@ -20,8 +20,8 @@ export function DashboardHeader({
 }) {
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   return (
-    <div className="flex flex-wrap items-end justify-between gap-3">
-      <div>
+    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+      <div className="min-w-0">
         <h1 className="flex items-center gap-2.5 text-h1">{icon}{title}</h1>
         <p className="mt-1 text-body-sm text-text-secondary">
           {subtitle} · {today}

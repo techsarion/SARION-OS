@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Bell, AlertTriangle, Clock, Inbox, Sparkles } from 'lucide-react';
+import { Bell, AlertTriangle, Clock, Inbox, Sparkles, CalendarClock, Target } from 'lucide-react';
 import type { NotificationItem } from '@/lib/server/data/workspace';
 
-const ICON = { overdue: AlertTriangle, due_soon: Clock, review: Inbox, reminder: Sparkles } as const;
-const TONE = { overdue: 'text-danger', due_soon: 'text-warning', review: 'text-accent', reminder: 'text-info' } as const;
+const ICON = { overdue: AlertTriangle, due_soon: Clock, review: Inbox, reminder: Sparkles, meeting: CalendarClock, target: Target } as const;
+const TONE = { overdue: 'text-danger', due_soon: 'text-warning', review: 'text-accent', reminder: 'text-info', meeting: 'text-accent', target: 'text-warning' } as const;
 
 export function NotificationsBell({ items }: { items: NotificationItem[] }) {
   const [open, setOpen] = useState(false);
@@ -18,6 +18,29 @@ export function NotificationsBell({ items }: { items: NotificationItem[] }) {
     document.addEventListener('mousedown', onClick);
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
+
+  // Ask once for browser-notification permission (only if not yet decided).
+  useEffect(() => {
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {});
+    }
+  }, []);
+
+  // Fire a native browser notification for items we haven't shown before
+  // (while the app is open). Seen ids persist in localStorage across reloads.
+  useEffect(() => {
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+    let seen: string[];
+    try { seen = JSON.parse(localStorage.getItem('notif-seen') ?? '[]'); } catch { seen = []; }
+    const seenSet = new Set(seen);
+    const fresh = items.filter((n) => !seenSet.has(`${n.kind}-${n.id}`));
+    for (const n of fresh.slice(0, 5)) {
+      const note = new Notification(n.title, { body: n.detail, tag: `${n.kind}-${n.id}`, icon: '/SARION-ICON.png' });
+      note.onclick = () => { window.focus(); window.location.href = n.href; };
+    }
+    const nextSeen = items.map((n) => `${n.kind}-${n.id}`);
+    try { localStorage.setItem('notif-seen', JSON.stringify(nextSeen.slice(0, 200))); } catch { /* ignore */ }
+  }, [items]);
 
   return (
     <div ref={ref} className="relative">

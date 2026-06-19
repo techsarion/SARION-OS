@@ -38,7 +38,7 @@ export function TimelineView({ days }: { days: TimelineDay[] }) {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={cn('rounded-sm px-3 py-1.5 text-body-sm transition-colors', filter === f ? 'bg-accent-soft text-text' : 'text-text-secondary hover:text-text')}
+            className={cn('rounded-sm px-2.5 py-1.5 text-body-sm transition-colors sm:px-3', filter === f ? 'bg-accent-soft text-text' : 'text-text-secondary hover:text-text')}
           >
             {f === 'all' ? 'All' : CAT_META[f].label}
           </button>
@@ -52,14 +52,14 @@ export function TimelineView({ days }: { days: TimelineDay[] }) {
           {filtered.map((day) => (
             <section key={day.label} className="space-y-2.5">
               <h2 className="text-overline uppercase text-text-secondary">{day.label}</h2>
-              <ul className="relative space-y-1 border-l border-border pl-4">
+              <ul className="relative space-y-1 border-l border-border pl-3 sm:pl-4">
                 {day.entries.map((e) => {
                   const meta = CAT_META[e.category];
                   const Icon = meta.icon;
                   const inner = (
                     <div className="flex items-start gap-2.5 rounded-sm px-2 py-1.5 transition-colors hover:bg-white/[0.03]">
                       <Icon className={cn('mt-0.5 h-4 w-4 shrink-0', meta.color)} />
-                      <p className="text-body-sm leading-snug text-text-secondary">
+                      <p className="text-body-sm leading-snug text-text-secondary break-words">
                         <span className="font-medium text-text">{e.actorName}</span> {e.phrase}
                         <span className="ml-1.5 text-caption text-text-muted">· {time(e.createdAt)}</span>
                       </p>
@@ -67,7 +67,7 @@ export function TimelineView({ days }: { days: TimelineDay[] }) {
                   );
                   return (
                     <li key={e.id} className="relative">
-                      <span className="absolute -left-[21px] top-2.5 h-1.5 w-1.5 rounded-full bg-border-strong" />
+                      <span className="absolute -left-[17px] top-2.5 h-1.5 w-1.5 rounded-full bg-border-strong sm:-left-[21px]" />
                       {e.href ? <Link href={e.href}>{inner}</Link> : inner}
                     </li>
                   );

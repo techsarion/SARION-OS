@@ -28,7 +28,7 @@ export function ActionsTracker({ buckets }: { buckets: ActionBuckets }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-1 rounded-sm border border-border bg-surface-2 p-0.5">
+      <div className="flex flex-wrap items-center gap-1 rounded-sm border border-border bg-surface-2 p-0.5">
         {tabs.map((t) => (
           <button
             key={t.key}
@@ -53,12 +53,12 @@ export function ActionsTracker({ buckets }: { buckets: ActionBuckets }) {
 
 function Row({ a, pending, run }: { a: ActionRow; pending: boolean; run: (fn: () => Promise<{ ok: boolean; error?: string }>) => void }) {
   return (
-    <li className={cn('flex items-center gap-3 rounded-sm border border-border bg-card px-3 py-2.5', a.done && 'opacity-70')}>
+    <li className={cn('flex items-center gap-2.5 rounded-sm border border-border bg-card px-3 py-2.5', a.done && 'opacity-70')}>
       <button
         onClick={() => run(() => toggleActionItem(a.id, a.meetingId, !a.done))}
         disabled={pending}
         aria-label={a.done ? 'Mark not done' : 'Mark done'}
-        className="shrink-0 text-text-muted transition-colors hover:text-success"
+        className="-m-1 shrink-0 p-1 text-text-muted transition-colors hover:text-success"
       >
         {a.done ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Circle className="h-4 w-4" />}
       </button>

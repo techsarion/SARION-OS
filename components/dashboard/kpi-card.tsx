@@ -25,7 +25,7 @@ export function KpiCard({ kpi }: { kpi: Kpi }) {
         <kpi.icon className="h-4 w-4 text-text-muted" />
       </div>
       <div className="mt-2.5 flex items-end justify-between gap-2">
-        <span className="tnum text-[28px] font-semibold leading-none tracking-tight text-text">
+        <span className="tnum text-2xl font-semibold leading-none tracking-tight text-text sm:text-[28px]">
           {kpi.value}
         </span>
         {kpi.delta && (

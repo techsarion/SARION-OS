@@ -193,7 +193,7 @@ function TargetCard({ target: t, variant }: { target: TargetItem; variant: 'stat
       </div>
 
       {variant === 'status' ? (
-        <div className="mt-3 flex items-center gap-1.5">
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
           {([TargetStatus.NOT_STARTED, TargetStatus.IN_PROGRESS, TargetStatus.COMPLETED] as TargetStatusT[]).map((s) => {
             const Icon = STATUS_ICON[s];
             const active = t.status === s;

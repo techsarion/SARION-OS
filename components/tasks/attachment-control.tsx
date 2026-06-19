@@ -68,8 +68,8 @@ export function AttachmentControl({ taskId, attachments }: { taskId: string; att
                 <p className="truncate text-body-sm text-text">{a.fileName}</p>
                 <p className="text-caption text-text-muted">{humanSize(a.fileSize)}{a.uploaderName ? ` · ${a.uploaderName}` : ''}</p>
               </div>
-              <button onClick={() => download(a.filePath, a.fileName)} aria-label="Download" className="text-text-muted hover:text-text"><Download className="h-4 w-4" /></button>
-              <button onClick={() => remove(a.id, a.filePath)} disabled={pending} aria-label="Remove" className="text-text-muted hover:text-danger"><X className="h-4 w-4" /></button>
+              <button onClick={() => download(a.filePath, a.fileName)} aria-label="Download" className="-m-1 shrink-0 p-1 text-text-muted hover:text-text"><Download className="h-4 w-4" /></button>
+              <button onClick={() => remove(a.id, a.filePath)} disabled={pending} aria-label="Remove" className="-m-1 shrink-0 p-1 text-text-muted hover:text-danger"><X className="h-4 w-4" /></button>
             </li>
           ))}
         </ul>

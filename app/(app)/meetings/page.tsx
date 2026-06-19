@@ -44,7 +44,7 @@ function Section({ title, meetings }: { title: string; meetings: Awaited<ReturnT
                 <div className="flex items-center gap-2">
                   <p className="truncate text-body-sm font-medium text-text">{m.title}</p>
                   <Badge tone={meta.tone}>{meta.label}</Badge>
-                  {m.recurrence !== 'NONE' && <Badge tone="outline">Repeats {m.recurrence.toLowerCase()}</Badge>}
+                  {m.recurrence !== 'NONE' && <span className="hidden sm:contents"><Badge tone="outline">Repeats {m.recurrence.toLowerCase()}</Badge></span>}
                 </div>
                 <p className="mt-0.5 text-caption text-text-muted">{when} · {m.durationMin} min · {m.organizerName ?? 'Unknown'}</p>
               </div>

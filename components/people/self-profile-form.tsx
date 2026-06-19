@@ -28,7 +28,7 @@ export function SelfProfileForm({ defaults }: { defaults: Defaults }) {
 
   return (
     <form action={formAction} className="space-y-5">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="full_name">Full name</Label>
           <Input id="full_name" name="full_name" defaultValue={defaults.full_name} required />

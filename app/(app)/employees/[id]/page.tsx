@@ -113,7 +113,7 @@ export default async function EmployeeProfilePage({ params }: { params: Promise<
             ) : (
               <div className="divide-y divide-border">
                 {reports.map((r) => (
-                  <Link key={r.id} href={`/employees/${r.id}`} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-white/[0.02]">
+                  <Link key={r.id} href={`/employees/${r.id}`} className="flex items-center gap-3 px-3 py-2.5 transition-colors hover:bg-white/[0.02] sm:px-4">
                     <Avatar name={r.full_name} src={r.avatar_url} size={28} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-body-sm font-medium text-text">{r.full_name}</p>

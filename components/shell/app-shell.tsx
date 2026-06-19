@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Sidebar } from './sidebar';
 import { Topbar } from './topbar';
 import { InsightsPanel } from './insights-panel';
+import { PushRegistrar } from './push-registrar';
 import type { QuickPerms } from '@/components/shell/quick-menu';
 import type { NotificationItem, ActivityFeedItem } from '@/lib/server/data/workspace';
 
@@ -48,6 +49,7 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen bg-bg">
+      <PushRegistrar />
       <Sidebar collapsed={collapsed} onToggle={toggle} counts={navCounts} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar userName={userName} userRole={userRole} avatarUrl={avatarUrl} accountHref={accountHref} notifications={notifications} quickPerms={quickPerms} navCounts={navCounts} />

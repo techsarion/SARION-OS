@@ -27,7 +27,7 @@ export default async function HierarchyPage() {
         <EmptyState icon={GitBranch} title="No hierarchy yet" description="Assign managers on employee profiles to build the org tree." />
       ) : (
         <Card>
-          <CardContent className="space-y-1">
+          <CardContent className="space-y-1 overflow-x-auto">
             {roots.map((node) => <Node key={node.id} node={node} depth={0} />)}
           </CardContent>
         </Card>
@@ -41,7 +41,7 @@ function Node({ node, depth }: { node: HierarchyNode; depth: number }) {
     <div>
       <Link
         href={`/employees/${node.id}`}
-        className="flex items-center gap-3 rounded-sm px-2 py-2 transition-colors hover:bg-white/[0.03]"
+        className="flex items-center gap-3 rounded-sm px-1 py-2 transition-colors hover:bg-white/[0.03] sm:px-2"
         style={{ marginLeft: depth * 22 }}
       >
         {depth > 0 && <span className="text-text-muted">↳</span>}

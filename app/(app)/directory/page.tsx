@@ -25,7 +25,7 @@ export default async function DirectoryPage() {
       {people.length === 0 ? (
         <EmptyState icon={Users} title="No team members yet" description="People appear here once they're added to the workspace." />
       ) : (
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
         {people.map((p) => (
           <Link
             key={p.id}

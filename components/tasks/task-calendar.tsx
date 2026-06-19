@@ -48,7 +48,7 @@ export function TaskCalendar({ tasks }: { tasks: TaskListItem[] }) {
       <div className="grid grid-cols-7 gap-1">
         {WEEKDAYS.map((d) => <div key={d} className="px-1 py-1 text-center text-overline uppercase text-text-muted">{d}</div>)}
         {cells.map((day, i) => (
-          <div key={i} className={`min-h-[84px] rounded-sm border p-1 ${day ? 'border-border bg-surface-2/30' : 'border-transparent'}`}>
+          <div key={i} className={`min-h-[56px] rounded-sm border p-1 sm:min-h-[84px] ${day ? 'border-border bg-surface-2/30' : 'border-transparent'}`}>
             {day && (
               <>
                 <div className="mb-1 px-1 text-caption tabular-nums text-text-muted">{day}</div>

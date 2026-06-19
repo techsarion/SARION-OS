@@ -46,7 +46,7 @@ export function CreateAccountForm({
 
   return (
     <form action={formAction} className="max-w-xl space-y-5">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="full_name">Full name</Label>
           <Input id="full_name" name="full_name" placeholder="Jordan Lee" required />
@@ -61,8 +61,8 @@ export function CreateAccountForm({
 
       <div className="space-y-1.5">
         <Label htmlFor="password">Password</Label>
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="relative w-full sm:flex-1">
             <Input
               id="password"
               name="password"
@@ -78,7 +78,7 @@ export function CreateAccountForm({
               {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
-          <Button type="button" variant="secondary" size="md" onClick={() => { setPassword(generatePassword()); setShow(true); }}>
+          <Button type="button" variant="secondary" size="md" className="w-full sm:w-auto" onClick={() => { setPassword(generatePassword()); setShow(true); }}>
             <RefreshCw className="h-4 w-4" /> Generate
           </Button>
         </div>
@@ -94,7 +94,7 @@ export function CreateAccountForm({
         <FieldError messages={fe?.role} />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="department_id">Department</Label>
           <Select id="department_id" name="department_id" value={dept} onChange={(e) => setDept(e.target.value)}>

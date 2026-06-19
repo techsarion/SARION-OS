@@ -87,14 +87,14 @@ export function MeetingForm({
 
       <div className="space-y-1.5">
         <Label>Participants</Label>
-        <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 md:grid-cols-3">
           {people.filter((p) => p.id !== currentUserId).map((p) => (
             <button
               key={p.id}
               type="button"
               onClick={() => toggle(p.id)}
               className={cn(
-                'flex items-center justify-between rounded-sm border px-3 py-2 text-body-sm transition-colors',
+                'flex items-center justify-between rounded-sm border px-3 py-2.5 text-body-sm transition-colors',
                 selected.includes(p.id)
                   ? 'border-accent bg-accent-soft text-text'
                   : 'border-border text-text-secondary hover:border-text-muted hover:text-text',

@@ -60,7 +60,7 @@ export function StartupDashboard({ firstName, data: d }: { firstName: string; da
       </Section>
 
       <Section title="This Month">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {month.map((k) => <KpiCard key={k.label} kpi={k} />)}
         </div>
       </Section>

@@ -49,23 +49,25 @@ export function EmployeeDirectory({
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative min-w-[220px] flex-1">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="relative w-full sm:min-w-[220px] sm:flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, email, or code…" className="pl-9" />
         </div>
-        <Select value={dept} onChange={(e) => setDept(e.target.value)} className="w-auto min-w-[150px]">
-          <option value="">All departments</option>
-          {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-        </Select>
-        <Select value={role} onChange={(e) => setRole(e.target.value)} className="w-auto min-w-[150px]">
-          <option value="">All roles</option>
-          {Object.entries(ROLE_LABEL).map(([v, label]) => <option key={v} value={v}>{label}</option>)}
-        </Select>
-        <Select value={status} onChange={(e) => setStatus(e.target.value)} className="w-auto min-w-[130px]">
-          <option value="">All statuses</option>
-          {Object.entries(STATUS_LABEL).map(([v, label]) => <option key={v} value={v}>{label}</option>)}
-        </Select>
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+          <Select value={dept} onChange={(e) => setDept(e.target.value)} className="w-full sm:w-auto sm:min-w-[150px]">
+            <option value="">All departments</option>
+            {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+          </Select>
+          <Select value={role} onChange={(e) => setRole(e.target.value)} className="w-full sm:w-auto sm:min-w-[150px]">
+            <option value="">All roles</option>
+            {Object.entries(ROLE_LABEL).map(([v, label]) => <option key={v} value={v}>{label}</option>)}
+          </Select>
+          <Select value={status} onChange={(e) => setStatus(e.target.value)} className="col-span-2 w-full sm:w-auto sm:min-w-[130px]">
+            <option value="">All statuses</option>
+            {Object.entries(STATUS_LABEL).map(([v, label]) => <option key={v} value={v}>{label}</option>)}
+          </Select>
+        </div>
       </div>
 
       <p className="text-caption text-text-muted">{filtered.length} of {employees.length} people</p>

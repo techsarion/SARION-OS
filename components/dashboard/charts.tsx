@@ -33,7 +33,7 @@ function ChartTooltip({ active, payload, label }: any) {
 export function ProductivityChart({ data }: { data: { name: string; value: number }[] }) {
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <AreaChart data={data} margin={{ top: 8, right: 6, left: -18, bottom: 0 }}>
+      <AreaChart data={data} margin={{ top: 8, right: 6, left: -8, bottom: 0 }}>
         <defs>
           <linearGradient id="sarionArea" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.32} />
@@ -67,7 +67,7 @@ export function DepartmentChart({
     v >= 85 ? 'var(--success)' : v >= 70 ? 'var(--accent)' : 'var(--warning)';
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={data} margin={{ top: 8, right: 6, left: -18, bottom: 0 }} barCategoryGap="32%">
+      <BarChart data={data} margin={{ top: 8, right: 6, left: -8, bottom: 0 }} barCategoryGap="32%">
         <XAxis dataKey="name" tick={AXIS} axisLine={false} tickLine={false} />
         <YAxis tick={AXIS} axisLine={false} tickLine={false} width={36} domain={[0, 100]} />
         <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />

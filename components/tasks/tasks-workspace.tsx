@@ -42,7 +42,7 @@ export function TasksWorkspace({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* Scope tabs */}
         <div className="flex items-center gap-1 rounded-sm border border-border bg-surface-2 p-0.5">
           {SCOPES.map((s) => (

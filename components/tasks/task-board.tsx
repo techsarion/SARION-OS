@@ -7,7 +7,7 @@ import type { TaskListItem } from '@/lib/server/data/tasks';
 /** Kanban board — one column per status. */
 export function TaskBoard({ tasks }: { tasks: TaskListItem[] }) {
   return (
-    <div className="grid grid-flow-col gap-3 overflow-x-auto pb-2" style={{ gridAutoColumns: 'minmax(240px, 1fr)' }}>
+    <div className="grid grid-flow-col gap-3 overflow-x-auto pb-2" style={{ gridAutoColumns: 'minmax(200px, 1fr)' }}>
       {STATUS_ORDER.map((status) => {
         const col = tasks.filter((t) => t.status === status);
         return (

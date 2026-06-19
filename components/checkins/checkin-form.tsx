@@ -44,10 +44,10 @@ export function CheckInForm({ kind, existing }: { kind: 'MORNING' | 'EOD'; exist
       {fields.map((f) => (
         <div key={f.name} className="space-y-1.5">
           <Label htmlFor={f.name}>{f.label}</Label>
-          <Textarea id={f.name} name={f.name} defaultValue={defaultOf(f.name)} placeholder={f.placeholder} className="min-h-[72px]" />
+          <Textarea id={f.name} name={f.name} defaultValue={defaultOf(f.name)} placeholder={f.placeholder} className="min-h-[88px] sm:min-h-[72px]" />
         </div>
       ))}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
         <Button type="submit" disabled={pending}>{pending ? 'Saving…' : existing ? 'Update' : 'Save'}</Button>
         {existing && <span className="text-caption text-text-muted">Last saved {new Date(existing.updatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>}
       </div>

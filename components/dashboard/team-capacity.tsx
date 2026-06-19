@@ -17,7 +17,28 @@ export function TeamCapacity({ rows }: { rows: CapacityRow[] }) {
         {rows.length === 0 ? (
           <EmptyState icon={Users} title="No team members" description="People show up here once they're added." />
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          {/* Mobile (<sm): stacked cards. */}
+          <ul className="space-y-2 sm:hidden">
+            {rows.map((r) => (
+              <li key={r.id} className="rounded-sm border border-border bg-card p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="min-w-0 flex-1 truncate text-body-sm font-medium text-text">{r.name}</span>
+                  <span className="shrink-0 text-caption text-text-muted">
+                    {r.openTasks} open{r.overdueTasks > 0 && <span className="text-danger"> · {r.overdueTasks} overdue</span>}
+                  </span>
+                </div>
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]" role="progressbar" aria-valuenow={r.weeklyProgress} aria-valuemin={0} aria-valuemax={100} aria-label={`${r.name} weekly progress`}>
+                    <div className="h-full rounded-full bg-accent" style={{ width: `${r.weeklyProgress}%` }} />
+                  </div>
+                  <span className="shrink-0 tabular-nums text-caption text-text-muted">{r.weeklyProgress}%</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+          {/* Tablet/desktop (sm+): table. */}
+          <div className="hidden overflow-x-auto sm:block">
             <table className="w-full text-body-sm">
               <thead>
                 <tr className="text-left text-overline uppercase text-text-muted">
@@ -46,6 +67,7 @@ export function TeamCapacity({ rows }: { rows: CapacityRow[] }) {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </CardContent>
     </Card>

@@ -53,7 +53,7 @@ export function WeeklyReviewForm({
 
       <div className="space-y-1.5">
         <Label htmlFor="summary">Weekly summary</Label>
-        <Textarea id="summary" name="summary" defaultValue={existing?.summary ?? ''} placeholder="What went well, what didn't, key learnings…" className="min-h-[120px]" />
+        <Textarea id="summary" name="summary" defaultValue={existing?.summary ?? ''} placeholder="What went well, what didn't, key learnings…" className="min-h-[100px] sm:min-h-[120px]" />
       </div>
 
       <div className="space-y-1.5">

@@ -16,12 +16,12 @@ export function PageHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-      <div>
+    <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+      <div className="min-w-0">
         <h1 className="text-h1">{title}</h1>
         {subtitle && <p className="mt-1 text-body-sm text-text-secondary">{subtitle}</p>}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 max-sm:[&_a]:flex-1 max-sm:[&_button]:flex-1">
         {children}
         {action && (
           <Link href={action.href} className={buttonVariants({ variant: 'primary', size: 'md' })}>

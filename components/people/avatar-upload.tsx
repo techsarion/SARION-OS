@@ -59,7 +59,7 @@ export function AvatarUpload({
     });
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
       <Avatar name={name} src={url} size={64} />
       <div className="space-y-1.5">
         <div className="flex items-center gap-2">

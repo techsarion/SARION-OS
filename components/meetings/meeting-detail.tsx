@@ -47,9 +47,9 @@ export function MeetingDetailView({
 
   return (
     <div className="mx-auto max-w-[900px] space-y-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-h1">{meeting.title}</h1>
             <Badge tone={typeMeta.tone}>{typeMeta.label}</Badge>
           </div>
@@ -78,7 +78,7 @@ export function MeetingDetailView({
       {meeting.agenda && (
         <Card>
           <CardHeader><CardTitle>Agenda</CardTitle></CardHeader>
-          <CardContent className="whitespace-pre-wrap text-body-sm text-text-secondary">{meeting.agenda}</CardContent>
+          <CardContent className="whitespace-pre-wrap break-words text-body-sm text-text-secondary">{meeting.agenda}</CardContent>
         </Card>
       )}
 
@@ -113,7 +113,7 @@ function NotesCard({ meetingId, initial }: { meetingId: string; initial: string 
       <CardHeader><CardTitle>Meeting Notes</CardTitle></CardHeader>
       <CardContent>
         <form action={formAction} className="space-y-3">
-          <Textarea name="notes" defaultValue={initial ?? ''} placeholder="Capture decisions, discussion, outcomes…" className="min-h-[140px]" />
+          <Textarea name="notes" defaultValue={initial ?? ''} placeholder="Capture decisions, discussion, outcomes…" className="min-h-[100px] sm:min-h-[140px]" />
           <Button type="submit" size="sm" disabled={pending}>{pending ? 'Saving…' : 'Save notes'}</Button>
         </form>
       </CardContent>
@@ -174,7 +174,7 @@ function ActionItemsCard({
                   onClick={() => run(() => toggleActionItem(a.id, meeting.id, !a.done))}
                   disabled={pending}
                   aria-label={a.done ? 'Mark not done' : 'Mark done'}
-                  className="shrink-0 text-text-muted transition-colors hover:text-success"
+                  className="-m-1 shrink-0 p-1 text-text-muted transition-colors hover:text-success"
                 >
                   {a.done ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Circle className="h-4 w-4" />}
                 </button>
@@ -208,7 +208,7 @@ function ActionItemsCard({
                   onClick={() => run(() => deleteActionItem(a.id, meeting.id))}
                   disabled={pending}
                   aria-label="Delete action item"
-                  className="shrink-0 text-text-muted transition-colors hover:text-danger"
+                  className="-m-1 shrink-0 p-1 text-text-muted transition-colors hover:text-danger"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>

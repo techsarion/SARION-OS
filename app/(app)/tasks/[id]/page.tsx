@@ -65,7 +65,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_280px] lg:grid-cols-[1fr_320px]">
         {/* Main column */}
         <div className="space-y-4">
           <Card>
