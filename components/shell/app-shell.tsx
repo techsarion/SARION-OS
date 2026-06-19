@@ -53,7 +53,12 @@ export function AppShell({
       <Sidebar collapsed={collapsed} onToggle={toggle} counts={navCounts} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar userName={userName} userRole={userRole} avatarUrl={avatarUrl} accountHref={accountHref} notifications={notifications} quickPerms={quickPerms} navCounts={navCounts} />
-        <main className="flex-1 overflow-x-hidden px-5 py-5 lg:px-7 lg:py-6">{children}</main>
+        <main
+          className="min-w-0 max-w-full flex-1 overflow-x-hidden px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6"
+          style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+        >
+          {children}
+        </main>
       </div>
       {showInsights && <InsightsPanel notifications={notifications} recentActivity={recentActivity} />}
     </div>

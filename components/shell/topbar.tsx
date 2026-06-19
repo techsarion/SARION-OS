@@ -1,10 +1,12 @@
 'use client';
 
-import { GlobalSearch } from '@/components/shell/global-search';
+import Link from 'next/link';
+import { GlobalSearch, MobileSearch } from '@/components/shell/global-search';
 import { QuickMenu, type QuickPerms } from '@/components/shell/quick-menu';
 import { NotificationsBell } from '@/components/shell/notifications-bell';
 import { MobileNav } from '@/components/shell/mobile-nav';
 import { UserMenu } from '@/components/shell/user-menu';
+import { Logo } from '@/components/brand/logo';
 import type { NotificationItem } from '@/lib/server/data/workspace';
 
 export function Topbar({
@@ -25,17 +27,30 @@ export function Topbar({
   navCounts?: Record<string, number>;
 }) {
   return (
-    <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-border bg-surface/80 px-4 backdrop-blur-md">
+    <header
+      className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-border bg-surface/80 px-4 backdrop-blur-md"
+      style={{ paddingTop: 'env(safe-area-inset-top)' }}
+    >
       <MobileNav counts={navCounts} />
+
+      {/* Mobile: brand logo between the menu and the actions. */}
+      <Link href="/" aria-label="Sarion home" className="md:hidden">
+        <Logo wordmark size={24} />
+      </Link>
+
+      {/* Desktop: inline search box. */}
       <GlobalSearch />
 
       <div className="ml-auto flex items-center gap-1.5">
-        {quickPerms && <QuickMenu perms={quickPerms} />}
+        <MobileSearch />
+        {quickPerms && <span className="hidden md:inline-flex"><QuickMenu perms={quickPerms} /></span>}
         <NotificationsBell items={notifications} />
 
-        <div className="mx-1 h-6 w-px bg-border" />
+        <div className="mx-1 hidden h-6 w-px bg-border md:block" />
 
-        <UserMenu userName={userName} userRole={userRole} avatarUrl={avatarUrl} accountHref={accountHref} />
+        <span className="hidden md:inline-flex">
+          <UserMenu userName={userName} userRole={userRole} avatarUrl={avatarUrl} accountHref={accountHref} />
+        </span>
       </div>
     </header>
   );
