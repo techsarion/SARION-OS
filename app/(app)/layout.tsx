@@ -6,10 +6,25 @@ import { roleLabel } from '@/lib/roles';
 import { getChromeData } from '@/lib/server/data/workspace';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const user = await getCurrentUser();
-  const chrome = user
-    ? await getChromeData(user.id)
-    : { notifications: [], myOpenTaskCount: 0, recentActivity: [] };
+  // The app shell wraps every authenticated page, so a failure here would take
+  // down the whole app with the global error boundary. Degrade gracefully:
+  // render the shell with empty chrome and log the cause (visible in server logs)
+  // rather than white-screening every route.
+  let user: Awaited<ReturnType<typeof getCurrentUser>> = null;
+  try {
+    user = await getCurrentUser();
+  } catch (err) {
+    console.error('[app layout] getCurrentUser failed:', err);
+  }
+
+  let chrome = { notifications: [], myOpenTaskCount: 0, recentActivity: [] } as Awaited<ReturnType<typeof getChromeData>>;
+  if (user) {
+    try {
+      chrome = await getChromeData(user.id);
+    } catch (err) {
+      console.error('[app layout] getChromeData failed:', err);
+    }
+  }
 
   const quickPerms = user
     ? {
