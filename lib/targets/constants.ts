@@ -1,5 +1,5 @@
 // Target status + period metadata. Pure constants — safe in Server and Client.
-import { TargetStatus, TargetPeriod } from '@/types/enums';
+import { TargetStatus } from '@/types/enums';
 import type { TargetStatus as TargetStatusT, TargetPeriod as TargetPeriodT } from '@/types/enums';
 
 type Tone = 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info';

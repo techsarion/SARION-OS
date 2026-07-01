@@ -7,7 +7,7 @@ import { weekStartISO } from '@/lib/server/data/weekly-review';
 
 export interface NotificationItem {
   id: string;
-  kind: 'overdue' | 'due_soon' | 'review' | 'reminder' | 'meeting' | 'target';
+  kind: 'overdue' | 'due_soon' | 'review' | 'reminder' | 'meeting' | 'target' | 'lead';
   title: string;
   detail: string;
   href: string;
@@ -46,7 +46,7 @@ function buildNotifications(tasks: TaskListItem[], userId: string): Notification
     }
   }
   // Overdue first, then due-soon, then review, then reminders.
-  const order = { overdue: 0, due_soon: 1, meeting: 2, target: 3, review: 4, reminder: 5 } as const;
+  const order = { overdue: 0, due_soon: 1, meeting: 2, lead: 3, target: 4, review: 5, reminder: 6 } as const;
   return items.sort((a, b) => order[a.kind] - order[b.kind]).slice(0, 12);
 }
 
@@ -146,12 +146,52 @@ async function buildTargetReminders(userId: string): Promise<NotificationItem[]>
   }));
 }
 
+/**
+ * Lead follow-ups + demos for the signed-in user, surfaced in the bell.
+ * Data-driven (no background job): overdue / due-today follow-ups assigned to
+ * the user, plus demos scheduled for tomorrow on leads they own.
+ */
+async function buildLeadReminders(userId: string): Promise<NotificationItem[]> {
+  const supabase = await createClient();
+  const today = todayISO();
+  const tomorrow = inDays(1);
+  const items: NotificationItem[] = [];
+
+  const { data: fups } = await supabase
+    .from('lead_followups')
+    .select('id, lead_id, type, due_date, done, assigned_to')
+    .eq('assigned_to', userId).eq('done', false).lte('due_date', today)
+    .order('due_date', { ascending: true }).limit(10);
+  const rows = (fups ?? []) as { id: string; lead_id: string; type: string; due_date: string }[];
+  if (rows.length) {
+    const ids = [...new Set(rows.map((r) => r.lead_id))];
+    const { data: leads } = await supabase.from('leads').select('id, agency_name').in('id', ids);
+    const names = new Map(((leads ?? []) as { id: string; agency_name: string }[]).map((l) => [l.id, l.agency_name]));
+    for (const r of rows) {
+      const overdue = r.due_date < today;
+      items.push({
+        id: `fup-${r.id}`, kind: 'lead', title: `Follow up: ${names.get(r.lead_id) ?? 'Lead'}`,
+        detail: overdue ? `${r.type} follow-up overdue · ${r.due_date}` : `${r.type} follow-up due today`,
+        href: `/leads/${r.lead_id}`,
+      });
+    }
+  }
+
+  const { data: demos } = await supabase
+    .from('leads').select('id, agency_name, demo_date, assigned_to')
+    .eq('assigned_to', userId).eq('demo_date', tomorrow).is('deleted_at', null).limit(8);
+  for (const d of (demos ?? []) as { id: string; agency_name: string }[]) {
+    items.push({ id: `demo-${d.id}`, kind: 'lead', title: `Demo tomorrow: ${d.agency_name}`, detail: `Scheduled for ${tomorrow}`, href: `/leads/${d.id}` });
+  }
+  return items;
+}
+
 /** One call for the layout — notifications, nav badge, and recent activity. */
 export async function getChromeData(userId: string): Promise<ChromeData> {
-  const [tasks, reminders, meetingReminders, targetReminders] = await Promise.all([
-    getTasks(), buildReminders(userId), buildMeetingReminders(userId), buildTargetReminders(userId),
+  const [tasks, reminders, meetingReminders, targetReminders, leadReminders] = await Promise.all([
+    getTasks(), buildReminders(userId), buildMeetingReminders(userId), buildTargetReminders(userId), buildLeadReminders(userId),
   ]);
-  const notifications = [...reminders, ...meetingReminders, ...targetReminders, ...buildNotifications(tasks, userId)];
+  const notifications = [...reminders, ...meetingReminders, ...targetReminders, ...leadReminders, ...buildNotifications(tasks, userId)];
   const myOpenTaskCount = tasks.filter((t) => t.assigneeId === userId && t.status !== 'COMPLETED').length;
   const recentActivity = await getRecentActivity(tasks);
   return { notifications, myOpenTaskCount, recentActivity };

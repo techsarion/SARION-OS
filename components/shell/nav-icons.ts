@@ -3,6 +3,7 @@
 import {
   LayoutDashboard, User, Gauge, Sunrise, Moon, CheckSquare, Calendar, ListChecks,
   CalendarRange, CalendarCheck, ClipboardCheck, Sun, Flag, Activity, History, Users, Settings,
+  Target, Contact, Upload, BarChart3,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -24,4 +25,8 @@ export const NAV_ICONS: Record<string, LucideIcon> = {
   history: History,
   users: Users,
   settings: Settings,
+  target: Target,
+  contact: Contact,
+  upload: Upload,
+  'bar-chart': BarChart3,
 };

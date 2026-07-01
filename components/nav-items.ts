@@ -36,6 +36,15 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: 'Sales',
+    items: [
+      { label: 'Lead Dashboard', icon: 'target', href: '/leads/dashboard' },
+      { label: 'Leads', icon: 'contact', href: '/leads' },
+      { label: 'Import Leads', icon: 'upload', href: '/leads/import' },
+      { label: 'Sales Reports', icon: 'bar-chart', href: '/leads/reports' },
+    ],
+  },
+  {
     label: 'Targets',
     items: [
       { label: 'Daily Targets', icon: 'sun', href: '/daily-targets' },

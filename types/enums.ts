@@ -51,6 +51,41 @@ export type MeetingRecurrence = (typeof MeetingRecurrence)[keyof typeof MeetingR
 export const CheckinKind = { MORNING: 'MORNING', EOD: 'EOD' } as const;
 export type CheckinKind = (typeof CheckinKind)[keyof typeof CheckinKind];
 
+export const LeadStatus = {
+  RESEARCH: 'RESEARCH',
+  IMPORTED: 'IMPORTED',
+  ASSIGNED: 'ASSIGNED',
+  LINKEDIN_REQUESTED: 'LINKEDIN_REQUESTED',
+  CONNECTED: 'CONNECTED',
+  COLD_EMAIL_SENT: 'COLD_EMAIL_SENT',
+  SOCIAL_DM_SENT: 'SOCIAL_DM_SENT',
+  CONVERSATION_STARTED: 'CONVERSATION_STARTED',
+  FOLLOWUP_SCHEDULED: 'FOLLOWUP_SCHEDULED',
+  INTERESTED: 'INTERESTED',
+  DEMO_SCHEDULED: 'DEMO_SCHEDULED',
+  DEMO_COMPLETED: 'DEMO_COMPLETED',
+  PROPOSAL_SENT: 'PROPOSAL_SENT',
+  NEGOTIATION: 'NEGOTIATION',
+  WON: 'WON',
+  LOST: 'LOST',
+  ARCHIVED: 'ARCHIVED',
+} as const;
+export type LeadStatus = (typeof LeadStatus)[keyof typeof LeadStatus];
+
+export const LeadPriority = { HIGH: 'HIGH', MEDIUM: 'MEDIUM', LOW: 'LOW' } as const;
+export type LeadPriority = (typeof LeadPriority)[keyof typeof LeadPriority];
+
+export const FollowupType = {
+  LINKEDIN: 'LINKEDIN',
+  EMAIL: 'EMAIL',
+  CALL: 'CALL',
+  INSTAGRAM: 'INSTAGRAM',
+  FACEBOOK: 'FACEBOOK',
+  X: 'X',
+  CUSTOM: 'CUSTOM',
+} as const;
+export type FollowupType = (typeof FollowupType)[keyof typeof FollowupType];
+
 export const MeetingType = {
   STANDUP: 'STANDUP',
   WEEKLY_REVIEW: 'WEEKLY_REVIEW',
