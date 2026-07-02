@@ -49,9 +49,11 @@ export async function getStartupDashboard(userId: string): Promise<StartupDashbo
     getTargetSummary(TargetPeriod.MONTHLY),
     supabase.from('task_activity').select('verb, meta, created_at').eq('verb', 'status_changed').order('created_at', { ascending: false }).limit(500),
     supabase.from('audit_log').select('id, created_at').gte('created_at', weekAgo),
-    supabase.from('check_ins').select('kind').eq('user_id', userId).eq('entry_date', today),
+    // Daily Execution Workspace drives the start/end-of-day status now:
+    // "checked in" = a workspace exists with a focus; "eod done" = day finished.
+    supabase.from('daily_workspaces').select('focus, finished_at').eq('user_id', userId).eq('work_date', today).maybeSingle<{ focus: string | null; finished_at: string | null }>(),
   ]);
-  const checkInKinds = new Set(((checkInRes.data ?? []) as { kind: string }[]).map((c) => c.kind));
+  const dailyWs = checkInRes.data as { focus: string | null; finished_at: string | null } | null;
 
   const total = tasks.length;
   const completed = tasks.filter((t) => t.status === 'COMPLETED').length;
@@ -91,8 +93,8 @@ export async function getStartupDashboard(userId: string): Promise<StartupDashbo
     upcomingDeadlines,
     todaysTasks: open.filter((t) => t.assigneeId === userId && t.due_date === today),
     todaysMeetings: meetings.filter((m) => m.scheduledAt.slice(0, 10) === today).sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt)),
-    checkedIn: checkInKinds.has('MORNING'),
-    eodDone: checkInKinds.has('EOD'),
+    checkedIn: !!dailyWs?.focus,
+    eodDone: !!dailyWs?.finished_at,
     myOpen: open.filter((t) => t.assigneeId === userId),
   };
 }

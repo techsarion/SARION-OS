@@ -13,7 +13,7 @@ export const PERMISSIONS = [
   'meeting:read', 'meeting:create', 'meeting:conduct', 'meeting:minute', 'meeting:close',
   'target:read', 'target:create', 'target:update', 'target:delete',
   'lead:read', 'lead:create', 'lead:update', 'lead:assign', 'lead:import', 'lead:delete',
-  'checkin:read', 'checkin:write', 'review:read', 'review:write',
+  'checkin:read', 'checkin:write', 'daily:read', 'daily:write', 'review:read', 'review:write',
   'approval:create', 'approval:decide', 'approval:configure',
   'goal:read', 'goal:create', 'goal:update',
   'document:read', 'document:create', 'document:version',

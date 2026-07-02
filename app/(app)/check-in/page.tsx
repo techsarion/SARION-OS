@@ -1,40 +1,18 @@
 import { requireUser } from '@/lib/auth';
-import { getMyCheckIn, getTeamCheckIns } from '@/lib/server/data/checkins';
-import { CheckinKind } from '@/types/enums';
+import { getDailyWorkspaceData } from '@/lib/server/data/daily-workspace';
 import { PageHeader } from '@/components/page-header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { EmptyState } from '@/components/ui/states';
-import { CheckInForm } from '@/components/checkins/checkin-form';
-import { CheckInFeed } from '@/components/checkins/checkin-feed';
-import { Sunrise } from 'lucide-react';
+import { DailyWorkspace } from '@/components/daily/daily-workspace';
 
-export default async function CheckInPage() {
+export const metadata = { title: 'Daily Workspace — Sarion Team OS' };
+
+export default async function DailyWorkspacePage() {
   const user = await requireUser();
-  const [mine, team] = await Promise.all([
-    getMyCheckIn(user.id, CheckinKind.MORNING),
-    getTeamCheckIns(CheckinKind.MORNING),
-  ]);
-  const others = team.filter((c) => c.userId !== user.id);
+  const data = await getDailyWorkspaceData(user.id);
 
   return (
-    <div className="mx-auto max-w-[1100px] space-y-6">
-      <PageHeader title="Daily Check-In" subtitle="Set your focus for the day and flag any blockers" />
-
-      <Card>
-        <CardHeader><CardTitle>Your check-in</CardTitle></CardHeader>
-        <CardContent>
-          <CheckInForm kind="MORNING" existing={mine} />
-        </CardContent>
-      </Card>
-
-      <section className="space-y-3">
-        <h2 className="text-overline uppercase text-text-secondary">Team check-ins today</h2>
-        {others.length === 0 ? (
-          <EmptyState icon={Sunrise} title="No one else has checked in yet" description="Your teammates' focus for the day will appear here." />
-        ) : (
-          <CheckInFeed checkIns={others} kind="MORNING" />
-        )}
-      </section>
+    <div className="mx-auto max-w-[1100px] fade-up">
+      <PageHeader title="Daily Workspace" subtitle="Plan, execute, and wrap up your entire day from one screen." />
+      <DailyWorkspace data={data} userName={user.fullName} />
     </div>
   );
 }

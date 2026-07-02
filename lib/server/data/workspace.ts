@@ -80,20 +80,19 @@ async function buildReminders(userId: string): Promise<NotificationItem[]> {
   const week = weekStartISO();
   const hour = new Date().getHours();
 
-  const [{ data: checkIns }, { data: review }] = await Promise.all([
-    supabase.from('check_ins').select('kind').eq('user_id', userId).eq('entry_date', today),
+  const [{ data: ws }, { data: review }] = await Promise.all([
+    supabase.from('daily_workspaces').select('focus, finished_at').eq('user_id', userId).eq('work_date', today).maybeSingle<{ focus: string | null; finished_at: string | null }>(),
     supabase.from('weekly_reviews').select('id').eq('user_id', userId).eq('week_start', week).maybeSingle<{ id: string }>(),
   ]);
-  const kinds = new Set(((checkIns ?? []) as { kind: string }[]).map((c) => c.kind));
   const items: NotificationItem[] = [];
 
-  // Morning check-in (before noon, if not yet done).
-  if (hour < 12 && !kinds.has('MORNING')) {
-    items.push({ id: 'rem-checkin', kind: 'reminder', title: 'Start your day with a check-in', detail: 'Set your focus and priorities', href: '/check-in' });
+  // Plan your day (before noon, if no focus set yet).
+  if (hour < 12 && !ws?.focus) {
+    items.push({ id: 'rem-checkin', kind: 'reminder', title: 'Plan your day in the workspace', detail: 'Set your focus and build your to-do list', href: '/check-in' });
   }
-  // End-of-day (from 4pm, if not yet done).
-  if (hour >= 16 && !kinds.has('EOD')) {
-    items.push({ id: 'rem-eod', kind: 'reminder', title: 'Log your end-of-day update', detail: "Wrap up what got done today", href: '/end-of-day' });
+  // Finish your day (from 4pm, if not yet wrapped up).
+  if (hour >= 16 && !ws?.finished_at) {
+    items.push({ id: 'rem-eod', kind: 'reminder', title: 'Finish your day', detail: 'Wrap up and carry unfinished work forward', href: '/check-in' });
   }
   // Weekly review (Thursday → Sunday, if not yet done this week).
   const dow = new Date().getDay(); // 0 Sun … 6 Sat

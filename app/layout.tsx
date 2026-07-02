@@ -30,8 +30,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${mono.variable}`}>
-      <body className="font-sans antialiased">{children}</body>
+    <html lang="en" className={`${inter.variable} ${mono.variable}`} suppressHydrationWarning>
+      {/* suppressHydrationWarning: browser extensions (e.g. Bitdefender's
+          bis_register / __processed_* attributes) mutate <body> before React
+          hydrates, producing a harmless dev-only mismatch warning. */}
+      <body className="font-sans antialiased" suppressHydrationWarning>{children}</body>
     </html>
   );
 }

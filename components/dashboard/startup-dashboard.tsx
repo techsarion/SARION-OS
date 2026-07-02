@@ -130,12 +130,12 @@ function MorningBand({ d }: { d: StartupDashboard }) {
           <div className="flex items-center gap-2.5">
             <Sunrise className={d.checkedIn ? 'h-5 w-5 text-success' : 'h-5 w-5 text-info'} />
             <div>
-              <p className="text-body-sm font-medium text-text">Daily check-in</p>
-              <p className="text-caption text-text-muted">{d.checkedIn ? "You've set your focus for today" : 'Not done yet'}</p>
+              <p className="text-body-sm font-medium text-text">Daily workspace</p>
+              <p className="text-caption text-text-muted">{d.checkedIn ? "You've set your focus for today" : 'Plan your day'}</p>
             </div>
           </div>
           {d.checkedIn ? <Badge tone="success" dot>Done</Badge> : (
-            <Link href="/check-in" className={buttonVariants({ variant: 'secondary', size: 'sm' })}>Check in</Link>
+            <Link href="/check-in" className={buttonVariants({ variant: 'secondary', size: 'sm' })}>Open</Link>
           )}
         </div>
         <div className="flex items-center justify-between gap-3 rounded-sm border border-border bg-card px-4 py-3">
@@ -147,7 +147,7 @@ function MorningBand({ d }: { d: StartupDashboard }) {
             </div>
           </div>
           {d.eodDone ? <Badge tone="success" dot>Done</Badge> : (
-            <Link href="/end-of-day" className={buttonVariants({ variant: 'ghost', size: 'sm' })}>Log EOD</Link>
+            <Link href="/check-in" className={buttonVariants({ variant: 'ghost', size: 'sm' })}>Finish day</Link>
           )}
         </div>
       </div>

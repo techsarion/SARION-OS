@@ -86,6 +86,26 @@ export const FollowupType = {
 } as const;
 export type FollowupType = (typeof FollowupType)[keyof typeof FollowupType];
 
+export const DailyTaskState = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  BLOCKED: 'BLOCKED',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+export type DailyTaskState = (typeof DailyTaskState)[keyof typeof DailyTaskState];
+
+export const DailyTaskSource = {
+  MANUAL: 'MANUAL',
+  CARRYOVER: 'CARRYOVER',
+  TASK: 'TASK',
+  LEAD_FOLLOWUP: 'LEAD_FOLLOWUP',
+  MEETING_ACTION: 'MEETING_ACTION',
+  TARGET: 'TARGET',
+  RECURRING: 'RECURRING',
+} as const;
+export type DailyTaskSource = (typeof DailyTaskSource)[keyof typeof DailyTaskSource];
+
 export const MeetingType = {
   STANDUP: 'STANDUP',
   WEEKLY_REVIEW: 'WEEKLY_REVIEW',

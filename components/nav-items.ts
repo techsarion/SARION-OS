@@ -23,8 +23,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Daily',
     items: [
-      { label: 'Daily Check-In', icon: 'sunrise', href: '/check-in' },
-      { label: 'End of Day', icon: 'moon', href: '/end-of-day' },
+      { label: 'Daily Workspace', icon: 'sunrise', href: '/check-in' },
     ],
   },
   {

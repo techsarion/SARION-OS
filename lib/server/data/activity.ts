@@ -39,6 +39,7 @@ const ACTION_PHRASE: Record<string, string> = {
   'target.delete': 'removed a target',
   'checkin.save': 'posted a daily check-in',
   'eod.save': 'posted an end-of-day update',
+  'daily.finish': 'wrapped up their day',
   'review.save': 'saved a weekly review',
   // People & org administration
   'user.create_account': 'added a team member',
